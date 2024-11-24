@@ -33,5 +33,5 @@ class Simulation {
         vector<Settlement*> settlements;
         vector<FacilityType> facilitiesOptions;
         //asdjashd
-        bool isNoam;
+        bool isNoam1;
 };
