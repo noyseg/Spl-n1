@@ -32,5 +32,6 @@ class Simulation {
         vector<Plan> plans;
         vector<Settlement> settlements;
         vector<FacilityType> facilitiesOptions;
-
+        //asdjashd
+        bool isNoam;
 };
