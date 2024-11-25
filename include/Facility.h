@@ -1,8 +1,10 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <sstream> // For stringstream in toString 
 using std::string;
 using std::vector;
+
 
 enum class FacilityStatus {
     UNDER_CONSTRUCTIONS,

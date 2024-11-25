@@ -23,15 +23,15 @@ const string Settlement::toString() const
     string str = name;
     if (type == SettlementType::VILLAGE)
     {
-        str += " Village";
+        str += " 0";
     }
     else if (type == SettlementType::CITY)
     {
-        str += " City";
+        str += " 1";
     }
     else
     {
-        str += " Metropolis";
+        str += " 2";
     }
     return str;
 }
