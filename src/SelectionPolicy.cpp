@@ -15,5 +15,6 @@ const string NaiveSelection::toString() const {
 
 }
 
-NaiveSelection *clone() const override;
-~NaiveSelection() override = default;
+NaiveSelection *NaiveSelection::clone() const {
+    return new NaiveSelection(*this);
+}
