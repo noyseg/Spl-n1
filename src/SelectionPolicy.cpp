@@ -29,6 +29,13 @@ NaiveSelection *NaiveSelection::clone() const{
 BalancedSelection::BalancedSelection(int LifeQualityScore, int EconomyScore, int EnvironmentScore):
 LifeQualityScore(LifeQualityScore), EconomyScore(EconomyScore),EnvironmentScore(EnvironmentScore){}
 
+// Updated current scores with plan scores 
+// void BalancedSelection::setScores(int addLifeQualityScore, int addEconomyScore, int addEnvironmentScore){
+//     LifeQualityScore += addLifeQualityScore;
+//     EconomyScore += addEconomyScore;
+//     EnvironmentScore += addEnvironmentScore;
+// }
+
 // Returns the distance between the maximun value that will be made by adding plan scores to the minimum value that will be made by adding plan scores
 int BalancedSelection::distance(int sumLifeQualityScore, int sumEconomyScore, int sumEnvironmentScore){
      int maximum = std::max({sumLifeQualityScore,sumEconomyScore,sumEnvironmentScore});
@@ -36,17 +43,16 @@ int BalancedSelection::distance(int sumLifeQualityScore, int sumEconomyScore, in
      return maximum - minimum;
 }
 
-// remember to check if we need to update life scores 
 // Returns the next FacilityType that is selected by BalancedSelection
 // Assume facilities Options is not empty
 const FacilityType& BalancedSelection::selectFacility(const vector<FacilityType>& facilitiesOptions){
     int minI = 0; 
-    int minDistance = distance(facilitiesOptions[0].getLifeQualityScore()+LifeQualityScore,facilitiesOptions[0].getEconomyScore()+EconomyScore,facilitiesOptions[0].getEnvironmentScore()+EnvironmentScore);
+    int minDistance = distance(LifeQualityScore+facilitiesOptions[0].getLifeQualityScore(),EconomyScore+facilitiesOptions[0].getEconomyScore(),EnvironmentScore + facilitiesOptions[0].getEnvironmentScore());
     if(minDistance == 0){
         return facilitiesOptions[minI];
     }
     for (int i=1; i<facilitiesOptions.size();i++){
-        int optionalMinDistance = distance(facilitiesOptions[i].getLifeQualityScore()+LifeQualityScore,facilitiesOptions[i].getEconomyScore()+EconomyScore,facilitiesOptions[i].getEnvironmentScore()+EnvironmentScore);
+        int optionalMinDistance = distance(LifeQualityScore+facilitiesOptions[i].getLifeQualityScore(),EconomyScore+facilitiesOptions[i].getEconomyScore(),EnvironmentScore + facilitiesOptions[i].getEnvironmentScore());
         if (optionalMinDistance < minDistance){
             minDistance = optionalMinDistance;
             minI = i;
