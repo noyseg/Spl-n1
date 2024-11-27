@@ -67,7 +67,6 @@ const int Facility::getTimeLeft() const
 // Promote facility constructoring by one and return Facility Status after promoting
 FacilityStatus Facility::step()
 {
-
     if (status == FacilityStatus::UNDER_CONSTRUCTIONS)
     {
         timeLeft -= 1;
@@ -82,9 +81,9 @@ FacilityStatus Facility::step()
 }
 
 // Setting facility's constructing staus
-void Facility::setStatus(FacilityStatus newStatus)
+void Facility::setStatus(FacilityStatus status)
 {
-    status = newStatus;
+    (*this).status = status;
 }
 
 // Returns facility's constructing staus

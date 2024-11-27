@@ -11,7 +11,7 @@ int main(int argc, char **argv)
 {
     Settlement *stl = new Settlement("kFarSPL", SettlementType::VILLAGE);
     cout << stl->toString() << endl;
-    Facility *facil = new Facility("kindergarden", "spl2", FacilityCategory::ECONOMY, 2, 2, 1, 1);
+    Facility *facil = new Facility("kindergarden", "spl2", FacilityCategory::ECONOMY, 1, 2, 1, 1);
     cout << facil->toString() << endl;
     FacilityStatus fs(facil->step());
     if (fs == FacilityStatus::OPERATIONAL)
