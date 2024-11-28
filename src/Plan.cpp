@@ -1,10 +1,10 @@
 #include "Plan.h"
 #include <iostream>
-#include <sstream> // For stringstream in toString
 
 using namespace std;
 
-Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions) : plan_id(plan_id), settlement(settlement), selectionPolicy(selectionPolicy), status(PlanStatus::AVALIABLE), facilities(), underConstruction(),
+
+Plan::Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions) : plan_id(planId), settlement(settlement), selectionPolicy(selectionPolicy), status(PlanStatus::AVALIABLE), facilities(), underConstruction(),
                                                                                                                                             facilityOptions(facilityOptions), life_quality_score(0), economy_score(0), environment_score(0) {}
 
 Plan::Plan(const Plan &otherPlan) : plan_id(otherPlan.plan_id),
@@ -26,9 +26,8 @@ Plan::Plan(const Plan &otherPlan) : plan_id(otherPlan.plan_id),
     }
 }
 
-// distructor
-Plan::~Plan()
-{
+// check if needed 
+void Plan::clear(){
     for (int i = 0; i < facilities.size(); i++)
     {
         if (facilities[i])
@@ -43,6 +42,12 @@ Plan::~Plan()
             delete underConstruction[i];
         }
     }
+}
+
+// distructor
+Plan::~Plan()
+{
+    clear();
 }
 
 // move constructor
@@ -89,21 +94,23 @@ void Plan::setSelectionPolicy(SelectionPolicy *selectionPolicy)
 // check scores
 void Plan::step()
 {
-    while (statusToString() == "AVALIABLE")
-    {
-        // new and delete
-        Facility *newFacility = new Facility(selectionPolicy->selectFacility(facilityOptions), settlement.getName());
-        addFacility(newFacility);
-    }
-    for (int i = underConstruction.size(); i == 0; i--)
+    for (int i = underConstruction.size(); i == -1 ; i--)
     {
         if (underConstruction[i]->step() == FacilityStatus::OPERATIONAL)
         {
             facilities.push_back(underConstruction[i]);
             underConstruction.erase(underConstruction.begin() + i);
+            status = PlanStatus::AVALIABLE;
         }
     }
+    while (status == PlanStatus::AVALIABLE)
+    {
+        // new and delete
+        Facility *newFacility = new Facility(selectionPolicy->selectFacility(facilityOptions), settlement.getName());
+        addFacility(newFacility);
+    }
 }
+
 
 const string Plan::statusToString() const
 {
@@ -116,13 +123,13 @@ const string Plan::statusToString() const
 
 void Plan::printStatus()
 {
-    cout << "Plan ID: " << plan_id << endl;
+    cout << "Plan ID: " + std::to_string(plan_id) << endl;
     cout << "Settlement Name: " + settlement.getName() << endl;
     cout << "planStatus: " + statusToString() << endl;
     cout << "selection Policy: " + (*selectionPolicy).toString() << endl;
-    cout << "LifeQualityScore: " + life_quality_score << endl;
-    cout << "EconomyScore: " + economy_score << endl;
-    cout << "EnvironmentScore: " + environment_score << endl;
+    cout << "LifeQualityScore: " + std::to_string(life_quality_score) << endl;
+    cout << "EconomyScore: " + std::to_string(economy_score) << endl;
+    cout << "EnvironmentScore: " + std::to_string(environment_score) << endl;
     for (int i = 0; i < facilities.size(); i++)
     {
         cout << "facilityName: " + facilities[i]->getName() << endl;
@@ -142,15 +149,14 @@ const vector<Facility *> &Plan::getFacilities() const
 
 void Plan::addFacility(Facility *facility)
 {
+    cout << "HERE ADD F:" << endl;
     underConstruction.push_back(facility);
     if(underConstruction.size() == static_cast<int>(settlement.getType()) + 1){
-        status = PlanStatus::AVALIABLE;
+        status = PlanStatus::BUSY;
     }
 }
 
 const string Plan::toString() const
 {
-    std::stringstream ss;
-    ss << plan_id;
-    return ss.str();
+    return std::to_string(plan_id);
 }
