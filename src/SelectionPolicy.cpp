@@ -1,6 +1,9 @@
 
 #include "SelectionPolicy.h"
+#include <iostream>
 #include <algorithm> // for min and max functions 
+
+using namespace std;
 
 // Constructor of NaiveSelection
 NaiveSelection::NaiveSelection(): lastSelectedIndex(-1){}
@@ -30,10 +33,16 @@ BalancedSelection::BalancedSelection(int LifeQualityScore, int EconomyScore, int
 LifeQualityScore(LifeQualityScore), EconomyScore(EconomyScore),EnvironmentScore(EnvironmentScore){}
 
 // Updated current scores with plan scores 
-// void BalancedSelection::setScores(int addLifeQualityScore, int addEconomyScore, int addEnvironmentScore){
-//     LifeQualityScore += addLifeQualityScore;
-//     EconomyScore += addEconomyScore;
-//     EnvironmentScore += addEnvironmentScore;
+void BalancedSelection::setScores(int addLifeQualityScore, int addEconomyScore, int addEnvironmentScore){
+    LifeQualityScore += addLifeQualityScore;
+    EconomyScore += addEconomyScore;
+    EnvironmentScore += addEnvironmentScore;
+}
+
+// void BalancedSelection::printScores(){
+//     cout << "L" << LifeQualityScore << endl;
+//     cout <<  "E" <<EconomyScore << endl;
+//     cout <<  "En" << EnvironmentScore << endl;
 // }
 
 // Returns the distance between the maximun value that will be made by adding plan scores to the minimum value that will be made by adding plan scores
@@ -48,19 +57,22 @@ int BalancedSelection::distance(int sumLifeQualityScore, int sumEconomyScore, in
 const FacilityType& BalancedSelection::selectFacility(const vector<FacilityType>& facilitiesOptions){
     int minI = 0; 
     int minDistance = distance(LifeQualityScore+facilitiesOptions[0].getLifeQualityScore(),EconomyScore+facilitiesOptions[0].getEconomyScore(),EnvironmentScore + facilitiesOptions[0].getEnvironmentScore());
-    if(minDistance == 0){
-        return facilitiesOptions[minI];
-    }
-    for (int i=1; i<facilitiesOptions.size();i++){
-        int optionalMinDistance = distance(LifeQualityScore+facilitiesOptions[i].getLifeQualityScore(),EconomyScore+facilitiesOptions[i].getEconomyScore(),EnvironmentScore + facilitiesOptions[i].getEnvironmentScore());
-        if (optionalMinDistance < minDistance){
-            minDistance = optionalMinDistance;
-            minI = i;
-            if(minDistance == 0){
-                return facilitiesOptions[minI];
+    // if minDistance == 0 we need to take the first one that was checked 
+    if(minDistance != 0){
+        for (int i=1; i<facilitiesOptions.size();i++){
+            int optionalMinDistance = distance(LifeQualityScore+facilitiesOptions[i].getLifeQualityScore(),EconomyScore+facilitiesOptions[i].getEconomyScore(),EnvironmentScore + facilitiesOptions[i].getEnvironmentScore());
+            if (optionalMinDistance < minDistance){
+                minDistance = optionalMinDistance;
+                minI = i;
+                // minDistance == 0 We need to take the the earilest one that was checked with minDistance == 0
+                if(minDistance == 0){
+                    setScores(facilitiesOptions[minI].getLifeQualityScore(),facilitiesOptions[minI].getEconomyScore(),facilitiesOptions[minI].getEnvironmentScore());
+                    return facilitiesOptions[minI];
+                }
             }
         }
     }
+    setScores(facilitiesOptions[minI].getLifeQualityScore(),facilitiesOptions[minI].getEconomyScore(),facilitiesOptions[minI].getEnvironmentScore());
     return facilitiesOptions[minI];
 }
 

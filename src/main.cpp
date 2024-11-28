@@ -25,10 +25,10 @@ int main(int argc, char **argv)
 
     // Selection Policy Test
     NaiveSelection *ns = new NaiveSelection();
-    FacilityType ft1("Hospital", FacilityCategory::ENVIRONMENT, 4, 2, 1, 1);
+    FacilityType ft1("Hospital", FacilityCategory::ENVIRONMENT, 4, 0, 1, 2);
     FacilityType ft2("Bank", FacilityCategory::ECONOMY, 3, 2, 1, 1);
-    FacilityType ft3("University", FacilityCategory::ECONOMY, 5, 2, 1, 1);
-    FacilityType ft4("Beauty-Salon", FacilityCategory::LIFE_QUALITY, 2, 2, 1, 1);
+    FacilityType ft3("University", FacilityCategory::ECONOMY, 5, 0, 1, 2);
+    FacilityType ft4("Beauty-Salon", FacilityCategory::LIFE_QUALITY, 2, 2, 2, 2);
 
     const vector<FacilityType> facilitiesOptions = {ft1, ft2, ft3, ft4};
     const FacilityType &chosenNaive = ns->selectFacility(facilitiesOptions);
@@ -53,10 +53,12 @@ int main(int argc, char **argv)
     const FacilityType &chosenSustainability1 = ss->selectFacility(facilitiesOptions);
     cout << chosenSustainability1.getName() << endl;
 
-    BalancedSelection *bs = new BalancedSelection(1, 2, 3);
+    BalancedSelection *bs = new BalancedSelection(3, 2, 1);
     cout << "Balance Test:" << endl;
     const FacilityType &chosenBalanced = bs->selectFacility(facilitiesOptions);
     cout << chosenBalanced.getName() << endl;
+    const FacilityType &chosenBalanced1 = bs->selectFacility(facilitiesOptions);
+    cout << chosenBalanced1.getName() << endl;
 
     if (argc != 2)
     {

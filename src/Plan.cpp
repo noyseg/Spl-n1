@@ -50,7 +50,7 @@ Plan::Plan(Plan &&otherPlan) : plan_id(otherPlan.plan_id),
                                settlement(otherPlan.settlement),
                                selectionPolicy(otherPlan.selectionPolicy),
                                status(otherPlan.status), facilities(otherPlan.facilities),
-                               underConstruction(std::move(otherPlan.underConstruction)), // read on move and etc
+                               underConstruction(std::move(otherPlan.underConstruction)), 
                                facilityOptions(std::move(otherPlan.facilityOptions)),     // References cannot be reseated once initialized
                                life_quality_score(otherPlan.life_quality_score), economy_score(otherPlan.economy_score), environment_score(otherPlan.environment_score)
 {

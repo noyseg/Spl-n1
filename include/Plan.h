@@ -15,6 +15,8 @@ class Plan {
         Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions);
         Plan(const Plan &otherPlan); //copy constructor 
         Plan(Plan &&otherPlan); //move constructor 
+        const Plan& operator=(const Plan& other) = delete; // Disabled assignment opertaor
+        const Plan& operator=(Plan&& other) = delete; // Disabled move assignment opertaor
         const int getlifeQualityScore() const;
         const int getEconomyScore() const;
         const int getEnvironmentScore() const;
