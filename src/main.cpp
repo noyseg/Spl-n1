@@ -27,7 +27,7 @@ int main(int argc, char **argv)
     FacilityType ft1("Hospital", FacilityCategory::ENVIRONMENT, 1, 0, 1, 2);
     FacilityType ft2("Bank", FacilityCategory::ECONOMY, 3, 2, 1, 1);
     FacilityType ft3("University", FacilityCategory::ECONOMY, 5, 0, 1, 2);
-    FacilityType ft4("Beauty-Salon", FacilityCategory::LIFE_QUALITY, 2, 2, 2, 2);
+    FacilityType ft4("Beauty-Salon", FacilityCategory::LIFE_QUALITY, 1, 2, 2, 2);
 
     const vector<FacilityType> facilitiesOptions = {ft1, ft2, ft3, ft4};
     // const FacilityType &chosenNaive = ns->selectFacility(facilitiesOptions);
@@ -63,8 +63,13 @@ int main(int argc, char **argv)
     Plan *pl = new Plan(231,stl,ns,facilitiesOptions);
     pl->printStatus();
     pl->step();
+    pl->printStatus();
     pl->step();
+    pl->printStatus();
     pl->step();
+    pl->printStatus();
+    pl->step();
+    pl->printStatus();
     pl->step();
     pl->printStatus();
 

@@ -94,11 +94,14 @@ void Plan::setSelectionPolicy(SelectionPolicy *selectionPolicy)
 // check scores
 void Plan::step()
 {
-    for (int i = underConstruction.size(); i == -1 ; i--)
+    for (int i = (underConstruction.size()-1); i >= 0 ; i--)
     {
         if (underConstruction[i]->step() == FacilityStatus::OPERATIONAL)
         {
             facilities.push_back(underConstruction[i]);
+            life_quality_score += underConstruction[i]->getLifeQualityScore();
+            economy_score += underConstruction[i]->getEconomyScore();
+            environment_score += underConstruction[i]->getEnvironmentScore();
             underConstruction.erase(underConstruction.begin() + i);
             status = PlanStatus::AVALIABLE;
         }
@@ -109,6 +112,7 @@ void Plan::step()
         Facility *newFacility = new Facility(selectionPolicy->selectFacility(facilityOptions), settlement.getName());
         addFacility(newFacility);
     }
+
 }
 
 
@@ -149,7 +153,6 @@ const vector<Facility *> &Plan::getFacilities() const
 
 void Plan::addFacility(Facility *facility)
 {
-    cout << "HERE ADD F:" << endl;
     underConstruction.push_back(facility);
     if(underConstruction.size() == static_cast<int>(settlement.getType()) + 1){
         status = PlanStatus::BUSY;
