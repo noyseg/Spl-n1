@@ -9,8 +9,7 @@ Simulation *backup = nullptr;
 
 int main(int argc, char **argv)
 {
-    Settlement *stl = new Settlement("kFarSPL", SettlementType::VILLAGE);
-    cout << stl->toString() << endl;
+    Settlement stl("kFarSPL", SettlementType::VILLAGE);
     Facility *facil = new Facility("kindergarden", "spl2", FacilityCategory::ECONOMY, 1, 2, 1, 1);
     cout << facil->toString() << endl;
     FacilityStatus fs(facil->step());
@@ -26,8 +25,8 @@ int main(int argc, char **argv)
     // Selection Policy Test
     NaiveSelection *ns = new NaiveSelection();
     FacilityType ft1("Hospital", FacilityCategory::ENVIRONMENT, 4, 2, 1, 1);
-    FacilityType ft2("Bank", FacilityCategory::ECONOMY, 3, 2, 1, 1);
-    FacilityType ft3("University", FacilityCategory::ECONOMY, 5, 2, 1, 1);
+    FacilityType ft2("Bank", FacilityCategory::LIFE_QUALITY, 3, 2, 1, 1);
+    FacilityType ft3("University", FacilityCategory::LIFE_QUALITY, 5, 2, 1, 1);
     FacilityType ft4("Beauty-Salon", FacilityCategory::LIFE_QUALITY, 2, 2, 1, 1);
 
     const vector<FacilityType> facilitiesOptions = {ft1, ft2, ft3, ft4};
@@ -57,6 +56,10 @@ int main(int argc, char **argv)
     cout << "Balance Test:" << endl;
     const FacilityType &chosenBalanced = bs->selectFacility(facilitiesOptions);
     cout << chosenBalanced.getName() << endl;
+
+    //Plan 
+
+    Plan *plan = new Plan(999,stl,ns,facilitiesOptions);
 
     if (argc != 2)
     {
