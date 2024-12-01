@@ -9,6 +9,8 @@ enum class ActionStatus{
     COMPLETED, ERROR
 };
 
+extern Simulation* backup = nullptr;
+
 class BaseAction{
     public:
         BaseAction();

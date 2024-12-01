@@ -13,6 +13,7 @@ class SelectionPolicy;
 class Simulation {
     public:
         Simulation(const string &configFilePath);
+        BaseAction* navigateAction(vector<std::string> vectorInput);
         void start();
         void addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy);
         void addAction(BaseAction *action);
@@ -21,10 +22,11 @@ class Simulation {
         bool isSettlementExists(const string &settlementName);
         Settlement &getSettlement(const string &settlementName);
         Plan &getPlan(const int planID);
-        bool isValidPlan(const string &id);
+        bool isValidPlan(int id);
         void step();
         void close();
         void open();
+        SelectionPolicy *createSelectionPolicy(const string &policyName);
 
     private:
         bool isRunning;

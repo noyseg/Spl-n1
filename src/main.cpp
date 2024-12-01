@@ -3,6 +3,9 @@
 #include "SelectionPolicy.h"
 #include <iostream>
 
+#include <fstream>
+#include <string>
+
 using namespace std;
 
 Simulation *backup = nullptr;
@@ -74,6 +77,7 @@ int main(int argc, char **argv)
     pl->printStatus();
 
 
+
     //Plan 
 
     Plan *plan = new Plan(999,stl,ns,facilitiesOptions);
@@ -84,9 +88,11 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    string configurationFile = argv[1];
+    //string configurationFile = argv[1];
     // Simulation simulation(configurationFile);
     // simulation.start();
+
+
 
     if (backup != nullptr)
     {
