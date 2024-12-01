@@ -133,12 +133,13 @@ Close *Close::clone() const{
     return new Close(*this);
 }
 
-
 //BackupSimulation
 
 void BackupSimulation::act(Simulation &simulation){
-    backup->close(); // אולי לא צריך 
-    backup = simulation; //  נממש בנאי ונשים כבנאי 
+    if (backup != nullptr){
+        backup->close(); // אולי לא צריך 
+    }
+    *backup = std::move(simulation); //  נממש בנאי ונשים כבנאי 
 }
 
 BackupSimulation *BackupSimulation ::clone() const{
@@ -153,12 +154,12 @@ RestoreSimulation::RestoreSimulation(){}
 
 void RestoreSimulation:: act(Simulation &simulation){
     if(backup == nullptr){
-
+        error("No backup available");
+        cout << "ERROR:" << getErrorMsg() <<endl;
     }
     else{
-        simulation = backup;
+        simulation = std::move(*backup);
     }
-
 }
 
 RestoreSimulation *RestoreSimulation:: clone() const{
