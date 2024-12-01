@@ -1,178 +1,253 @@
-#include "Simulation.cpp"
+#include "Simulation.h"
+#include "Settlement.cpp"
 #include <iostream>
 #include "Auxiliary.cpp"
-#include "Action.h"
+#include "Action.cpp"
+#include <fstream>
+#include <string>
 using namespace std;
-extern Simulation *backup;
 
 Simulation ::Simulation(const string &configFilePath) : isRunning(false), planCounter(0), actionsLog(), plans(), settlements(), facilitiesOptions()
 {
+    std::ifstream File(configFilePath);
+    string line;
+    while (getline(File, line))
+    {
+        vector<std::string> read = Auxiliary::parseArguments(line);
+        if (read[0] == "settlement")
+        {
+            Settlement *stl = new Settlement(read[1], Settlement::stringToSettlementType(read[2]));
+            addSettlement(stl);
+        }
+        else if (read[0] == "facility")
+        {
+            Facility *stl = new Facility(read[1], , std::stoi(read[3]), std::stoi(read[4]), std::stoi(read[5]), std::stoi(read[6]));
+            addSettlement(stl);
+        }
+    }
+}
+
+BaseAction *Simulation::navigateAction(vector<std::string> vectorInput)
+{
+    if (vectorInput.size() == 1)
+    {
+        if (vectorInput[0] == "log")
+        {
+            return new PrintActionsLog();
+        }
+        else if (vectorInput[0] == "backup")
+        {
+            return new BackupSimulation();
+        }
+        else if (vectorInput[0] == "restore")
+        {
+            // remeber to remove last resotre if needed
+            return new RestoreSimulation();
+        }
+    }
+    if (vectorInput.size() == 2)
+    {
+        // Print plan status
+        // check is valid
+        if (vectorInput[0] == "PlanStatus" && isValidPlan(std::stoi(vectorInput[1])) == true)
+        {
+            return new PrintPlanStatus(std::stoi(vectorInput[1]));
+        }
+        else if (vectorInput[0] == "step")
+        {
+            return new SimulateStep(std::stoi(vectorInput[1]));
+        }
+    }
+    if (vectorInput.size() == 3)
+    {
+        if (vectorInput[0] == "settlement")
+        {
+            SettlementType stlType = {
+                std::stoi(vectorInput[2]) == 0 ? SettlementType::VILLAGE : std::stoi(vectorInput[2]) == 1 ? SettlementType::CITY
+                                                                                                          : SettlementType::METROPOLIS};
+            return new AddSettlement(vectorInput[1], stlType);
+        }
+        else if (vectorInput[0] == "plan")
+        {
+            return new AddPlan(vectorInput[1], vectorInput[2]);
+        }
+        else if (vectorInput[0] == "changePolicy")
+        {
+            return new ChangePlanPolicy(std::stoi(vectorInput[1]), vectorInput[2]);
+        }
+    }
+    if (vectorInput.size() == 7)
+    {
+        if (vectorInput[0] == "facility")
+        {
+            FacilityCategory facilType = {
+                std::stoi(vectorInput[2]) == 0 ? FacilityCategory::LIFE_QUALITY : std::stoi(vectorInput[2]) == 1 ? FacilityCategory::ECONOMY
+                                                                                                                 : FacilityCategory::ENVIRONMENT};
+            return new AddFacility(vectorInput[1], facilType, std::stoi(vectorInput[3]), std::stoi(vectorInput[4]), std::stoi(vectorInput[5]), std::stoi(vectorInput[6]));
+        }
+    }
+    return nullptr;
 }
 
 void Simulation ::start()
 {
-    isRunning = true;
+    open();
+    cout << "The simulation has started" << endl;
     while (isRunning)
     {
         string input;
         cin >> input;
         vector<std::string> vectorInput = Auxiliary::parseArguments(input);
-        // close or log
-        if (vectorInput.size() == 1)
+        if (vectorInput.size() && vectorInput[0] == "close")
         {
-            if (vectorInput[0] == "close")
+            close();
+        }
+        else
+        {
+            BaseAction *action = navigateAction(vectorInput);
+            if (action != nullptr)
             {
-                close();
-            }
-            else if (vectorInput[0] == "log")
-            {
-                PrintActionsLog().toString();
-                // what here????
-                actionsLog.push_back(restoreSimulation);
-            }
-            else if (vectorInput[0] == "backup")
-            {
-                // remeber to remove last backup
-                BackupSimulation *lastBackup = new BackupSimulation();
-                lastBackup.act(*this);
-                actionsLog.push_back(lastBackup);
-            }
-            else if (vectorInput[0] == "restore")
-            {
-                // remeber to remove last resotre if needed
-                RestoreSimulation restoreSimulation = new restoreSimulation();
-                restoreSimulation.act(*this);
-                if (restoreSimulation.getStatus() == ActionStatus::ERROR)
+                (*action).act(*this);
+                if ((*action).getStatus() == ActionStatus::ERROR)
                 {
-                    cout << restoreSimulation.toString() << endl;
+                    cout << action->stringErrorMsg() << endl;
                 }
-                actionsLog.push_back(restoreSimulation);
+                addAction(action);
             }
             else
             {
-                cout << "INPUT ERROR" << endl
-            }
-        }
-        if (vectorInput.size() == 2)
-        {
-            // Print plan status
-            // check is valid
-            if (vectorInput[0] == "PlanStatus" && isValidPlan(std::stoi(vectorInput[1])) == true)
-            {
-                plans[std::stoi(vectorInput[1])].printStatus();
-            }
-            else if (vectorInput[0] == "step")
-            {
-                SimulateStep simulateStep(std::stoi(vectorInput[1]));
-                simulateStep.act(*this);
-            }
-            else
-            {
-                cout << "INPUT ERROR" << endl
-            }
-            if (vectorInput.size() == 3)
-            {
+                cout << "INVALID ACTION" << endl;
             }
         }
     }
+}
 
-    bool Simulation::addFacility(FacilityType facility)
+bool Simulation::addFacility(FacilityType facility)
+{
+    for (FacilityType ft : facilitiesOptions)
     {
-        facilitiesOptions.push_back(facility);
-    }
-
-    bool Simulation::isSettlementExists(const string &settlementName)
-    {
-        bool isExist = false;
-        for (Settlement *stl : settlements)
+        if (ft.getName() == facility.getName())
         {
-            if (stl->getName() == settlementName)
-            {
-                return true;
-            }
+            return false;
         }
-        return isExist;
     }
+    facilitiesOptions.push_back(facility);
+    return true;
+}
 
-    Settlement &Simulation ::getSettlement(const string &settlementName)
+bool Simulation::isSettlementExists(const string &settlementName)
+{
+    bool isExist = false;
+    for (Settlement *stl : settlements)
     {
-        for (Settlement *stl : settlements)
+        if (stl->getName() == settlementName)
         {
-            if (stl->getName() == settlementName)
-            {
-                return *stl; // Dereference pointer and return the object reference
-            }
+            return true;
         }
-        // Return error ?
     }
+    return isExist;
+}
 
-    Plan &Simulation ::getPlan(const int planId)
+Settlement &Simulation ::getSettlement(const string &settlementName)
+{
+    for (Settlement *stl : settlements)
     {
-        // Assuming you can't delete a plan and plan counter starting from 1
-        if (planId - 1 >= 0 && planId - 1 < plans.size())
+        if (stl->getName() == settlementName)
         {
-            return plans.at(planId - 1);
+            return *stl; // Dereference pointer and return the object reference
         }
-        // Return error ?
     }
+    // Return error ?
+}
 
-    bool Simulation::isValidPlan(const string &id)
+Plan &Simulation ::getPlan(const int planId)
+{
+    // Assuming you can't delete a plan and plan counter starting from 1
+    if (planId - 1 >= 0 && planId - 1 < plans.size())
     {
-        int planId = std::stoi(id);
-        if (planId - 1 >= 0 && planId - 1 < plans.size())
-        {
-            void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy)
-            {
-                if (isSettlementExists(settlement.getName()) == false)
-                {
-                    planCounter++;
-                    vector<FacilityType> &rFacilitiesOptions = facilitiesOptions;
-                    Plan *newPlan = new Plan(planCounter, settlement, selectionPolicy, rFacilitiesOptions);
-                }
-            }
+        return plans.at(planId - 1);
+    }
+    // Return error ?
+}
 
-            void Simulation::addAction(BaseAction * action)
-            {
-                actionsLog.push_back(action);
-            }
+bool Simulation::isValidPlan(int id)
+{
+    if (id - 1 >= 0 && id - 1 < plans.size())
+    {
+        return true;
+    }
+    return false;
+}
+void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy)
+{
+    if (isSettlementExists(settlement.getName()) == false)
+    {
+        planCounter++;
+        vector<FacilityType> &rFacilitiesOptions = facilitiesOptions;
+        Plan *newPlan = new Plan(planCounter, settlement, selectionPolicy, rFacilitiesOptions);
+    }
+}
 
-            bool Simulation::addSettlement(Settlement * settlement)
-            {
-                string settlementName = settlement->getName();
-                if (isSettlementExists(settlementName) == false)
-                {
-                    settlements.push_back(settlement);
-                    return true;
-                }
-                return false;
-            }
+void Simulation::addAction(BaseAction *action)
+{
+    actionsLog.push_back(action);
+}
 
-            void Simulation::step()
-            {
-                for (Plan p : plans)
-                {
-                    p.step();
-                }
-            }
+bool Simulation::addSettlement(Settlement *settlement)
+{
+    string settlementName = settlement->getName();
+    if (isSettlementExists(settlementName) == false)
+    {
+        settlements.push_back(settlement);
+        return true;
+    }
+    return false;
+}
 
-            void Simulation::close()
-            {
-                for (Plan p : plans)
-                {
-                    p.printStatus();
-                }
-                isRunning = false;
-                for (BaseAction *ba : actionsLog)
-                {
-                    delete ba;
-                }
-                for (Settlement *stl : settlements)
-                {
-                    delete stl;
-                }
-            }
+void Simulation::step()
+{
+    for (Plan p : plans)
+    {
+        p.step();
+    }
+}
 
-            void Simulation ::open()
-            {
-                isRunning = true;
-            }
+void Simulation::close()
+{
+    for (Plan p : plans)
+    {
+        p.printStatus();
+    }
+    isRunning = false;
+    for (BaseAction *ba : actionsLog)
+    {
+        delete ba;
+    }
+    for (Settlement *stl : settlements)
+    {
+        delete stl;
+    }
+}
+
+void Simulation ::open()
+{
+    isRunning = true;
+}
+
+SelectionPolicy *Simulation ::createSelectionPolicy(const string &policyName)
+{
+    SelectionPolicy *sp; /*DELETE?*/
+    if (policyName == "nve")
+    {
+        sp = new NaiveSelection();
+    }
+    else if (policyName == "bal")
+    {
+        sp = new BalancedSelection(0, 0, 0);
+    }
+    else
+    {
+        sp = new EconomySelection();
+    }
+    return sp;
+}

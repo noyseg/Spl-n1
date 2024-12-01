@@ -85,6 +85,10 @@ const int Plan::getEnvironmentScore() const
     return environment_score;
 }
 
+const string Plan::getSelectionPolicyName()const{
+    return (*selectionPolicy).toString();
+}
+
 void Plan::setSelectionPolicy(SelectionPolicy *selectionPolicy)
 {
     (*this).selectionPolicy = selectionPolicy;
