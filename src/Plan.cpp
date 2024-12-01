@@ -94,20 +94,33 @@ void Plan::setSelectionPolicy(SelectionPolicy *selectionPolicy)
 // check scores
 void Plan::step()
 {
-    for (int i = underConstruction.size(); i >= 0; i--)
-    {
-        if (underConstruction[i]->step() == FacilityStatus::OPERATIONAL)
-        {
-            facilities.push_back(underConstruction[i]);
-            underConstruction.erase(underConstruction.begin() + i);
-            status = PlanStatus::AVALIABLE;
-        }
-    }
     while (status == PlanStatus::AVALIABLE)
     {
         // new and delete
         Facility *newFacility = new Facility(selectionPolicy->selectFacility(facilityOptions), settlement.getName());
         addFacility(newFacility);
+    }
+    
+    for (int i = (underConstruction.size() - 1); i >= 0; i--)
+    {
+        if (underConstruction[i]->step() == FacilityStatus::OPERATIONAL)
+        {
+            facilities.push_back(underConstruction[i]);
+            life_quality_score += underConstruction[i]->getLifeQualityScore();
+            economy_score += underConstruction[i]->getEconomyScore();
+            environment_score += underConstruction[i]->getEnvironmentScore();
+            underConstruction.erase(underConstruction.begin() + i);
+            status = PlanStatus::AVALIABLE;
+        }
+    }
+
+}
+void Plan::addFacility(Facility *facility)
+{
+    underConstruction.push_back(facility);
+    if (underConstruction.size() == static_cast<int>(settlement.getType()) + 1)
+    {
+        status = PlanStatus::BUSY;
     }
 }
 
@@ -144,16 +157,6 @@ void Plan::printStatus()
 const vector<Facility *> &Plan::getFacilities() const
 {
     return facilities;
-}
-
-void Plan::addFacility(Facility *facility)
-{
-    cout << "HERE ADD F:" << endl;
-    underConstruction.push_back(facility);
-    if (underConstruction.size() == static_cast<int>(settlement.getType()) + 1)
-    {
-        status = PlanStatus::BUSY;
-    }
 }
 
 const string Plan::toString() const
