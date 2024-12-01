@@ -13,6 +13,11 @@ class SelectionPolicy;
 class Simulation {
     public:
         Simulation(const string &configFilePath);
+        Simulation(const Simulation &otherSimulation);
+        Simulation(const Simulation &&otherSimulation);
+        ~Simulation();
+        Simulation &operator=(const Simulation &otherSimulation);
+        Simulation &operator=(Simulation &&otherSimulation);
         BaseAction* navigateAction(vector<std::string> vectorInput);
         void start();
         void addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy);

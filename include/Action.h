@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include "Simulation.h"
+
 enum class SettlementType;
 enum class FacilityCategory;
 
@@ -10,8 +11,6 @@ enum class ActionStatus
     COMPLETED,
     ERROR
 };
-
-extern Simulation *backup = nullptr;
 
 class BaseAction
 {

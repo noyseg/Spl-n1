@@ -1,6 +1,7 @@
 #include "Action.h"
 #include <iostream>
 using namespace std;
+
 extern Simulation *backup = nullptr;
 
 void BaseAction::complete()
@@ -55,7 +56,7 @@ void AddPlan::act(Simulation &simulation)
     }
     else
     {
-        simulation.addPlan(simulation.getSettlement(settlementName), simulation.createSelectionPolicy(selectionPolicy));
+        simulation.addPlan(simulation.getSettlement(settlementName), simulation.createSelectionPolicy(selectionPolicy, 0, 0, 0));
         complete();
     }
 }
@@ -158,7 +159,7 @@ void ChangePlanPolicy::act(Simulation &simulation)
         cout << "planID: " << planId << endl;
         cout << "previous policy: " << plan.getSelectionPolicyName() << endl;
         cout << "newPolicy: " << newPolicy << endl;
-        plan.setSelectionPolicy(simulation.createSelectionPolicy(newPolicy,plan.getlifeQualityScore(),plan.getEconomyScore(),plan.getEnvironmentScore()));
+        plan.setSelectionPolicy(simulation.createSelectionPolicy(newPolicy, plan.getlifeQualityScore(), plan.getEconomyScore(), plan.getEnvironmentScore()));
     }
 }
 
@@ -176,8 +177,17 @@ void PrintActionsLog::act(Simulation &simulation)
 {
     for (BaseAction *bs : simulation.getActionsLog())
     {
-        cout<< bs->toString()<<endl;
+        cout << bs->toString() << endl;
     }
+    complete();
+}
+PrintActionsLog *PrintActionsLog::clone() const
+{
+    return new PrintActionsLog(*this);
+}
+const string PrintActionsLog::toString() const
+{
+    return "printActionLog " + getStatusString();
 }
 
 Close::Close() {}
@@ -190,13 +200,17 @@ Close *Close::clone() const
 {
     return new Close(*this);
 }
+const string Close::toString() const
+{
+    return "closeSimulation";
+}
 
 // BackupSimulation
 
 void BackupSimulation::act(Simulation &simulation)
 {
-    backup->close();     // אולי לא צריך
-    backup = simulation; //  נממש בנאי ונשים כבנאי
+    *backup = std::move(simulation);
+    complete();
 }
 
 BackupSimulation *BackupSimulation ::clone() const
@@ -206,7 +220,7 @@ BackupSimulation *BackupSimulation ::clone() const
 
 const string BackupSimulation::toString() const
 {
-    return "BackupSimulation";
+    return "BackupSimulation " + getStatusString();
 }
 
 RestoreSimulation::RestoreSimulation() {}
@@ -215,10 +229,13 @@ void RestoreSimulation::act(Simulation &simulation)
 {
     if (backup == nullptr)
     {
+        error("No backup available");
+        cout << "ERROR:" << getErrorMsg() << endl;
     }
     else
     {
-        simulation = backup;
+        simulation = std::move(*backup);
+        complete();
     }
 }
 
@@ -229,5 +246,5 @@ RestoreSimulation *RestoreSimulation::clone() const
 
 const string RestoreSimulation::toString() const
 {
-    return "RestoreSimulation";
+    return "RestoreSimulation " + getStatusString();
 }

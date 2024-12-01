@@ -7,7 +7,9 @@
 #include <string>
 using namespace std;
 
-Simulation ::Simulation(const string &configFilePath) : isRunning(false), planCounter(0), actionsLog(), plans(), settlements(), facilitiesOptions()
+// constructor 
+Simulation ::Simulation(const string &configFilePath) : isRunning(false), planCounter(0),
+actionsLog(), plans(), settlements(), facilitiesOptions()
 {
     std::ifstream File(configFilePath);
     string line;
@@ -24,17 +26,112 @@ Simulation ::Simulation(const string &configFilePath) : isRunning(false), planCo
             FacilityType facil(FacilityType(read[1], FacilityType::stringToFacilityCategory(read[2]), std::stoi(read[3]), std::stoi(read[4]), std::stoi(read[5]), std::stoi(read[6])));
             addFacility(facil);
         }
-        else if (read[0] == "plan")
-        {
-            addPlan(getSettlement(read[1]), createSelectionPolicy(read[2]));
+        else if (read[0] == "plan"){
+            addPlan(getSettlement(read[1]),createSelectionPolicy(read[2],0,0,0));
         }
     }
 }
+
+// copy constructor 
+Simulation ::Simulation(const Simulation &otherSimulation): isRunning(otherSimulation.isRunning),
+planCounter(otherSimulation.planCounter), 
+actionsLog(), plans(), settlements(), facilitiesOptions(otherSimulation.facilitiesOptions){
+    for (Settlement *stl: otherSimulation.settlements){
+        settlements.push_back(new Settlement(*stl));
+    }
+    for (Plan pl: otherSimulation.plans){
+        Plan newPlan = Plan(pl);
+    }
+    for (BaseAction *act: otherSimulation.actionsLog){
+        actionsLog.push_back(act->clone());
+    }
+}
+
+// move constructor 
+Simulation::Simulation(const Simulation &&otherSimulation):
+isRunning(otherSimulation.isRunning),
+planCounter(otherSimulation.planCounter),
+actionsLog(std::move(otherSimulation.actionsLog)),
+plans(std::move(otherSimulation.plans)),
+settlements(std::move(otherSimulation.settlements)),
+facilitiesOptions(std::move(otherSimulation.facilitiesOptions)) {
+for (Settlement *stl: otherSimulation.settlements){
+    stl = nullptr;
+}
+for (BaseAction *act: otherSimulation.actionsLog){
+    act = nullptr;
+}
+}
+
+// distructor 
+Simulation::~Simulation(){
+    for (BaseAction* action : actionsLog) {
+        if (action){
+            delete action; 
+        }
+    }
+    for (Settlement* settlement : settlements) {
+        if(settlement){
+            delete settlement; 
+        }
+    }
+}
+
+// operator assigment 
+Simulation &Simulation::operator=(const Simulation &otherSimulation){
+    if (this != &otherSimulation) {
+        isRunning = otherSimulation.isRunning;
+        planCounter = otherSimulation.planCounter;
+        for (BaseAction* action : actionsLog) {
+            delete action;
+        }
+        actionsLog = otherSimulation.actionsLog;
+        for (Settlement* settlement : settlements) {
+            delete settlement;
+        }
+        settlements = otherSimulation.settlements;
+        plans = otherSimulation.plans;
+        facilitiesOptions = otherSimulation.facilitiesOptions;
+    }
+    return *this;
+}
+
+// move operator assigment 
+Simulation &Simulation::operator=(Simulation &&otherSimulation){
+    isRunning = otherSimulation.isRunning;
+    planCounter = otherSimulation.planCounter;
+    for (BaseAction* action : actionsLog) {
+        if (action){
+            delete action;
+        }
+    }
+    for (BaseAction* action : actionsLog) {
+        action = nullptr;
+    }
+    for (Settlement* settlement : settlements) {
+        if (settlement){
+            delete settlement;
+        }
+    }
+    actionsLog = std::move(otherSimulation.actionsLog);
+    for (Settlement* settlement : settlements) {
+        settlement = nullptr;
+    }
+    settlements = std::move(otherSimulation.settlements);
+    plans = std::move(otherSimulation.plans);
+    facilitiesOptions = std::move(otherSimulation.facilitiesOptions);
+    return *this;
+}
+
 
 BaseAction *Simulation::navigateAction(vector<std::string> vectorInput)
 {
     if (vectorInput.size() == 1)
     {
+        if (vectorInput[0] == "close")
+        {
+            return new Close();
+        }
         if (vectorInput[0] == "log")
         {
             return new PrintActionsLog();
@@ -98,26 +195,15 @@ void Simulation ::start()
         string input;
         cin >> input;
         vector<std::string> vectorInput = Auxiliary::parseArguments(input);
-        if (vectorInput.size() && vectorInput[0] == "close")
+        BaseAction *action = navigateAction(vectorInput);
+        if (action != nullptr)
         {
-            close();
+            (*action).act(*this);
+            addAction(action);
         }
         else
         {
-            BaseAction *action = navigateAction(vectorInput);
-            if (action != nullptr)
-            {
-                (*action).act(*this);
-                if ((*action).getStatus() == ActionStatus::ERROR)
-                {
-                    cout << action->stringErrorMsg() << endl;
-                }
-                addAction(action);
-            }
-            else
-            {
-                cout << "INVALID ACTION" << endl;
-            }
+            cout << "INVALID ACTION" << endl;
         }
     }
 }
@@ -260,3 +346,4 @@ SelectionPolicy *Simulation ::createSelectionPolicy(const string &policyName, in
     }
     return sp;
 }
+
