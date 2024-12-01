@@ -14,7 +14,8 @@ compile: src/main.cpp src/Auxiliary.cpp
 	g++ -g -c -Wall -Weffc++ -std=c++11 -Iinclude -o bin/Plan.o src/Plan.cpp
 
 run:
-	./bin/main
+	./bin/main config_file.txt
+
 
 clean:
 	rm -f bin/*

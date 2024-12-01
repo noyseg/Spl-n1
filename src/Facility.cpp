@@ -118,3 +118,16 @@ const string Facility::toString() const
 
     return ss.str();
 }
+
+FacilityCategory FacilityType:: stringToFacilityCategory(const string& category){
+    if (category == "0")
+    {
+        return FacilityCategory::LIFE_QUALITY;
+    }
+    else if (category == "1")
+    {
+       return FacilityCategory::ECONOMY;
+    }
+    return FacilityCategory::ENVIRONMENT;
+
+}

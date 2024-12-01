@@ -17,6 +17,18 @@ SettlementType Settlement::getType() const
     return type;
 }
 
+// Return SettlementType of given int
+SettlementType Settlement::stringToSettlementType(const string& type){
+    if (type == "0")
+    {
+        return SettlementType::VILLAGE;
+    }
+    else if (type == "1")
+    {
+        return SettlementType::CITY;
+    }
+    return SettlementType::METROPOLIS;
+}
 // return the settlement propeties
 const string Settlement::toString() const
 {

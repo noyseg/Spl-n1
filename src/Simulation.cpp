@@ -11,18 +11,19 @@ Simulation ::Simulation(const string &configFilePath) : isRunning(false), planCo
 {
     std::ifstream File(configFilePath);
     string line;
-    while (getline(File, line))
-    {
+    while (getline(File, line)) {
         vector<std::string> read = Auxiliary::parseArguments(line);
-        if (read[0] == "settlement")
-        {
-            Settlement *stl = new Settlement(read[1], Settlement::stringToSettlementType(read[2]));
+        if (read[0] == "settlement"){
+            Settlement *stl = new Settlement(read[1],Settlement::stringToSettlementType(read[2]));
             addSettlement(stl);
         }
-        else if (read[0] == "facility")
-        {
-            Facility *stl = new Facility(read[1], , std::stoi(read[3]), std::stoi(read[4]), std::stoi(read[5]), std::stoi(read[6]));
-            addSettlement(stl);
+        else if (read[0] == "facility"){
+            FacilityType facil(FacilityType(read[1],FacilityType::stringToFacilityCategory
+            (read[2]),std::stoi(read[3]),std::stoi(read[4]),std::stoi(read[5]),std::stoi(read[6])));
+            addFacility(facil);
+        }
+        else if (read[0] == "plan"){
+            addPlan(getSettlement(read[1]),createSelectionPolicy(read[2]));
         }
     }
 }
@@ -62,9 +63,7 @@ BaseAction *Simulation::navigateAction(vector<std::string> vectorInput)
     {
         if (vectorInput[0] == "settlement")
         {
-            SettlementType stlType = {
-                std::stoi(vectorInput[2]) == 0 ? SettlementType::VILLAGE : std::stoi(vectorInput[2]) == 1 ? SettlementType::CITY
-                                                                                                          : SettlementType::METROPOLIS};
+            SettlementType stlType = Settlement::stringToSettlementType(vectorInput[2]);
             return new AddSettlement(vectorInput[1], stlType);
         }
         else if (vectorInput[0] == "plan")
@@ -80,9 +79,7 @@ BaseAction *Simulation::navigateAction(vector<std::string> vectorInput)
     {
         if (vectorInput[0] == "facility")
         {
-            FacilityCategory facilType = {
-                std::stoi(vectorInput[2]) == 0 ? FacilityCategory::LIFE_QUALITY : std::stoi(vectorInput[2]) == 1 ? FacilityCategory::ECONOMY
-                                                                                                                 : FacilityCategory::ENVIRONMENT};
+            FacilityCategory facilType = FacilityType::stringToFacilityCategory(vectorInput[2]);
             return new AddFacility(vectorInput[1], facilType, std::stoi(vectorInput[3]), std::stoi(vectorInput[4]), std::stoi(vectorInput[5]), std::stoi(vectorInput[6]));
         }
     }
@@ -124,10 +121,8 @@ void Simulation ::start()
 
 bool Simulation::addFacility(FacilityType facility)
 {
-    for (FacilityType ft : facilitiesOptions)
-    {
-        if (ft.getName() == facility.getName())
-        {
+    for(FacilityType ft: facilitiesOptions){
+        if (ft.getName() == facility.getName()){
             return false;
         }
     }
