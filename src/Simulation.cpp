@@ -25,7 +25,7 @@ actionsLog(), plans(), settlements(), facilitiesOptions()
             addFacility(facil);
         }
         else if (read[0] == "plan"){
-            addPlan(getSettlement(read[1]),createSelectionPolicy(read[2]),0,0,0);
+            addPlan(getSettlement(read[1]),createSelectionPolicy(read[2],0,0,0));
         }
     }
 }
