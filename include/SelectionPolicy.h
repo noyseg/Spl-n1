@@ -25,7 +25,8 @@ class NaiveSelection: public SelectionPolicy {
 class BalancedSelection: public SelectionPolicy {
     public:
         BalancedSelection(int LifeQualityScore, int EconomyScore, int EnvironmentScore);
-        //void setScores(int LifeQualityScore, int EconomyScore, int EnvironmentScore);
+        void setScores(int LifeQualityScore, int EconomyScore, int EnvironmentScore);
+        // void printScores();
         int distance(int sumLifeQualityScore, int sumEconomyScore, int sumEnvironmentScore);
         const FacilityType& selectFacility(const vector<FacilityType>& facilitiesOptions) override;
         const string toString() const override;

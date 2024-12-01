@@ -73,7 +73,6 @@ FacilityStatus Facility::step()
 
         if (timeLeft == 0)
         {
-            cout << getTimeLeft() << endl;
             setStatus(FacilityStatus::OPERATIONAL);
         }
     }
