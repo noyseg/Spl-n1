@@ -212,7 +212,7 @@ void BackupSimulation::act(Simulation &simulation)
     *backup = std::move(simulation);
     complete();
 }
-BackupSimulation::BackupSimulation() {}
+BackupSimulation::BackupSimulation() {
 
 BackupSimulation *BackupSimulation ::clone() const
 {
