@@ -343,7 +343,7 @@ bool Simulation::addSettlement(Settlement *settlement)
 
 void Simulation::step()
 {
-    for (Plan plan : plans)
+    for (Plan &plan : plans)
     {
         plan.step();
     }
@@ -351,7 +351,7 @@ void Simulation::step()
 
 void Simulation::close()
 {
-    for (Plan plan : plans)
+    for (Plan &plan : plans)
     {
         plan.printStatus();
     }

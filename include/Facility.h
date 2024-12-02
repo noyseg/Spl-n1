@@ -28,6 +28,7 @@ class FacilityType {
         int getEconomyScore() const;
         FacilityCategory getCategory() const;
         static FacilityCategory stringToFacilityCategory(const string& category);
+        void setTime();
 
     protected:
         const string name;
