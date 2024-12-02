@@ -26,12 +26,13 @@ class Simulation {
         bool addFacility(FacilityType facility);
         bool isSettlementExists(const string &settlementName);
         Settlement &getSettlement(const string &settlementName);
+        vector<BaseAction*> getActionsLog()const;
         Plan &getPlan(const int planID);
         bool isValidPlan(int id);
         void step();
         void close();
         void open();
-        SelectionPolicy *createSelectionPolicy(const string &policyName);
+        SelectionPolicy *createSelectionPolicy(const string &policyName,int lifeQualityScore, int economyScore, int environmentScore);
 
     private:
         bool isRunning;

@@ -13,15 +13,17 @@ actionsLog(), plans(), settlements(), facilitiesOptions()
 {
     std::ifstream File(configFilePath);
     string line;
-    while (getline(File, line)) {
+    while (getline(File, line))
+    {
         vector<std::string> read = Auxiliary::parseArguments(line);
-        if (read[0] == "settlement"){
-            Settlement *stl = new Settlement(read[1],Settlement::stringToSettlementType(read[2]));
+        if (read[0] == "settlement")
+        {
+            Settlement *stl = new Settlement(read[1], Settlement::stringToSettlementType(read[2]));
             addSettlement(stl);
         }
-        else if (read[0] == "facility"){
-            FacilityType facil(FacilityType(read[1],FacilityType::stringToFacilityCategory
-            (read[2]),std::stoi(read[3]),std::stoi(read[4]),std::stoi(read[5]),std::stoi(read[6])));
+        else if (read[0] == "facility")
+        {
+            FacilityType facil(FacilityType(read[1], FacilityType::stringToFacilityCategory(read[2]), std::stoi(read[3]), std::stoi(read[4]), std::stoi(read[5]), std::stoi(read[6])));
             addFacility(facil);
         }
         else if (read[0] == "plan"){
@@ -88,7 +90,11 @@ Simulation &Simulation::operator=(const Simulation &otherSimulation){
             delete settlement;
         }
         settlements = otherSimulation.settlements;
-        plans = otherSimulation.plans;
+        plans.clear();
+        // plans = otherSimulation.plans;
+        for (const Plan &plan : otherSimulation.plans) {
+            plans.push_back(plan);gdfgdf
+        }
         facilitiesOptions = otherSimulation.facilitiesOptions;
     }
     return *this;
@@ -208,8 +214,10 @@ void Simulation ::start()
 
 bool Simulation::addFacility(FacilityType facility)
 {
-    for(FacilityType ft: facilitiesOptions){
-        if (ft.getName() == facility.getName()){
+    for (FacilityType ft : facilitiesOptions)
+    {
+        if (ft.getName() == facility.getName())
+        {
             return false;
         }
     }
@@ -240,6 +248,11 @@ Settlement &Simulation ::getSettlement(const string &settlementName)
         }
     }
     // Return error ?
+}
+
+vector<BaseAction *> Simulation::getActionsLog()const
+{
+    return actionsLog;
 }
 
 Plan &Simulation ::getPlan(const int planId)
@@ -316,7 +329,7 @@ void Simulation ::open()
     isRunning = true;
 }
 
-SelectionPolicy *Simulation ::createSelectionPolicy(const string &policyName)
+SelectionPolicy *Simulation ::createSelectionPolicy(const string &policyName, int lifeQualityScore, int economyScore, int environmentScore)
 {
     SelectionPolicy *sp; /*DELETE?*/
     if (policyName == "nve")
@@ -325,11 +338,15 @@ SelectionPolicy *Simulation ::createSelectionPolicy(const string &policyName)
     }
     else if (policyName == "bal")
     {
-        sp = new BalancedSelection(0, 0, 0);
+        sp = new BalancedSelection(lifeQualityScore, economyScore, environmentScore);
+    }
+    else if (policyName == "eco")
+    {
+        sp = new EconomySelection();
     }
     else
     {
-        sp = new EconomySelection();
+        sp = new SustainabilitySelection();
     }
     return sp;
 }
