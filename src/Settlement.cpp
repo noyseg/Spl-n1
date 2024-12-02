@@ -39,7 +39,7 @@ const string Settlement::toString() const
     }
     else if (type == SettlementType::CITY)
     {
-        str += " 1";
+        str += " 1";  
     }
     else
     {
