@@ -2,11 +2,9 @@
 #include <iostream>
 using namespace std;
 
-extern Simulation *backup = nullptr;
+extern Simulation *backup;
 
-BaseAction::BaseAction()
-{
-}
+BaseAction::BaseAction(){}
 
 void BaseAction::complete()
 {
@@ -21,7 +19,7 @@ const string &BaseAction::getErrorMsg() const
 {
     return errorMsg;
 };
-const string &BaseAction::getStatusString() const
+const string BaseAction::getStatusString() const
 {
     if (status == ActionStatus::ERROR)
     {
@@ -30,7 +28,8 @@ const string &BaseAction::getStatusString() const
     return "COMPLETED";
 }
 
-SimulateStep ::SimulateStep(const int numOfSteps) : numOfSteps(numOfSteps) {}
+SimulateStep ::SimulateStep(const int numOfSteps) : numOfSteps(numOfSteps) {
+}
 void SimulateStep ::act(Simulation &simulation)
 {
     // how to change status?
@@ -43,7 +42,7 @@ void SimulateStep ::act(Simulation &simulation)
 
 const string SimulateStep::toString() const
 {
-    return "step" + std::to_string(numOfSteps) + " " + getStatusString();
+    return "step " + std::to_string(numOfSteps) + " " + getStatusString();
 }
 SimulateStep *SimulateStep::clone() const
 {
@@ -133,8 +132,8 @@ void PrintPlanStatus::act(Simulation &simulation)
     else
     {
         complete();
-        string statusToPring = simulation.getPlan(planId).toString();
-        cout << statusToPring << endl;
+        simulation.getPlan(planId).printStatus();
+        
     }
 }
 
@@ -216,7 +215,7 @@ void BackupSimulation::act(Simulation &simulation)
     *backup = std::move(simulation);
     complete();
 }
-BackupSimulation::BackupSimulation() {
+BackupSimulation::BackupSimulation() {}
 
 BackupSimulation *BackupSimulation ::clone() const
 {

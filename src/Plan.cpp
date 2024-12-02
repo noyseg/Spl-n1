@@ -109,6 +109,7 @@ void Plan::step()
     {
         if (underConstruction[i]->step() == FacilityStatus::OPERATIONAL)
         {
+            // why dont hereeeee 
             facilities.push_back(underConstruction[i]);
             life_quality_score += underConstruction[i]->getLifeQualityScore();
             economy_score += underConstruction[i]->getEconomyScore();

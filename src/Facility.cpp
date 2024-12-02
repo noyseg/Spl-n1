@@ -70,7 +70,6 @@ FacilityStatus Facility::step()
     if (status == FacilityStatus::UNDER_CONSTRUCTIONS)
     {
         timeLeft -= 1;
-
         if (timeLeft == 0)
         {
             setStatus(FacilityStatus::OPERATIONAL);
