@@ -64,7 +64,10 @@ const FacilityType& BalancedSelection::selectFacility(const vector<FacilityType>
             if (optionalMinDistance < minDistance){
                 minDistance = optionalMinDistance;
                 minI = i;
-         nI];
+                // minDistance == 0 We need to take the the earilest one that was checked with minDistance == 0
+                if(minDistance == 0){
+                    setScores(facilitiesOptions[minI].getLifeQualityScore(),facilitiesOptions[minI].getEconomyScore(),facilitiesOptions[minI].getEnvironmentScore());
+                    return facilitiesOptions[minI];
                 }
             }
         }
