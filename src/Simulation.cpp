@@ -122,11 +122,15 @@ Simulation &Simulation::operator=(const Simulation &otherSimulation)
         plans.clear();
         for (const Plan &plan : otherSimulation.plans)
         {
-            plans.emplace_back(plan); // Use the copy constructor, not operator=
+            plans.emplace_back(plan);
         }
 
         // Copy facilitiesOptions
-        facilitiesOptions = otherSimulation.facilitiesOptions;
+        facilitiesOptions.clear();
+        for (FacilityType ft : otherSimulation.facilitiesOptions)
+        {
+            facilitiesOptions.emplace_back(ft); 
+        }
     }
     return *this;
 }
