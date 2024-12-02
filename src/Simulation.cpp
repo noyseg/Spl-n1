@@ -85,15 +85,19 @@ Simulation &Simulation::operator=(const Simulation &otherSimulation){
         for (BaseAction* action : actionsLog) {
             delete action;
         }
-        actionsLog = otherSimulation.actionsLog;
-        for (Settlement* settlement : settlements) {
-            delete settlement;
+        actionsLog.clear();
+        for (BaseAction* action : otherSimulation.actionsLog) {
+            actionsLog.push_back(action);
+        }
+        settlements.clear();
+        for (Settlement* settlement : otherSimulation.settlements) {
+            settlements.push_back(settlement);
         }
         settlements = otherSimulation.settlements;
         plans.clear();
         // plans = otherSimulation.plans;
         for (const Plan &plan : otherSimulation.plans) {
-            plans.push_back(plan);gdfgdf
+            plans.push_back(plan);
         }
         facilitiesOptions = otherSimulation.facilitiesOptions;
     }
@@ -109,18 +113,18 @@ Simulation &Simulation::operator=(Simulation &&otherSimulation){
             delete action;
         }
     }
-    for (BaseAction* action : actionsLog) {
-        action = nullptr;
-    }
+    // for (BaseAction* action : actionsLog) {
+    //     action = nullptr;
+    // }
     for (Settlement* settlement : settlements) {
         if (settlement){
             delete settlement;
         }
     }
     actionsLog = std::move(otherSimulation.actionsLog);
-    for (Settlement* settlement : settlements) {
-        settlement = nullptr;
-    }
+    // for (Settlement* settlement : settlements) {
+    //     settlement = nullptr;
+    // }
     settlements = std::move(otherSimulation.settlements);
     plans = std::move(otherSimulation.plans);
     facilitiesOptions = std::move(otherSimulation.facilitiesOptions);
