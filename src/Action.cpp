@@ -4,10 +4,10 @@ using namespace std;
 
 extern Simulation *backup = nullptr;
 
-void BaseAction::complete()
-{
-    status = ActionStatus::COMPLETED;
-}
+    void BaseAction::complete()
+    {
+        status = ActionStatus::COMPLETED;
+    }
 void BaseAction::error(string errorMsg)
 {
     status = ActionStatus::ERROR;

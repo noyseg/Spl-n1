@@ -23,10 +23,10 @@ public:
     virtual ~BaseAction() = default;
 
 protected:
-    void complete() {};
-    void error(string errorMsg);
-    const string &getErrorMsg() const;
-    const string &getStatusString() const;
+    virtual void complete();
+    virtual void error(string errorMsg);
+    virtual const string &getErrorMsg() const;
+    virtual const string &getStatusString() const;
 
 private:
     string errorMsg;
