@@ -116,21 +116,21 @@ Simulation &Simulation::operator=(const Simulation &otherSimulation)
         settlements.clear();
         for (Settlement *settlement : otherSimulation.settlements)
         {
-            settlements.push_back(settlement); // Assuming clone() creates a deep copy
+            settlements.push_back(settlement);
         }
 
         // Rebuild the plans vector
         plans.clear();
         for (const Plan &plan : otherSimulation.plans)
         {
-            plans.emplace_back(plan);
+            plans.push_back(plan);
         }
 
         // Copy facilitiesOptions
         facilitiesOptions.clear();
         for (FacilityType ft : otherSimulation.facilitiesOptions)
         {
-            facilitiesOptions.emplace_back(ft);
+            facilitiesOptions.push_back(ft);
         }
     }
     return *this;
@@ -156,7 +156,7 @@ Simulation &Simulation::operator=(Simulation &&otherSimulation)
     {
         if (settlement)
         {
-            delete settlement;
+            settlement=nullptr;
         }
     }
     actionsLog = std::move(otherSimulation.actionsLog);
@@ -245,6 +245,7 @@ void Simulation ::start()
         if (action != nullptr)
         {
             (*action).act(*this);
+
             addAction(action);
         }
         else
