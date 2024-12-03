@@ -130,7 +130,7 @@ Simulation &Simulation::operator=(const Simulation &otherSimulation)
         facilitiesOptions.clear();
         for (FacilityType ft : otherSimulation.facilitiesOptions)
         {
-            facilitiesOptions.emplace_back(ft); 
+            facilitiesOptions.emplace_back(ft);
         }
     }
     return *this;
@@ -196,7 +196,7 @@ BaseAction *Simulation::navigateAction(vector<std::string> vectorInput)
     {
         // Print plan status
         // check is valid
-        if (vectorInput[0] == "PlanStatus" && isValidPlan(std::stoi(vectorInput[1])) == true)
+        if (vectorInput[0] == "planStatus")
         {
             return new PrintPlanStatus(std::stoi(vectorInput[1]));
         }
@@ -317,13 +317,10 @@ bool Simulation::isValidPlan(int id)
 }
 void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy)
 {
-    if (isSettlementExists(settlement.getName()))
-    {
-        planCounter++;
-        vector<FacilityType> &rFacilitiesOptions = facilitiesOptions;
-        Plan p(planCounter, settlement, selectionPolicy, rFacilitiesOptions);
-        plans.push_back(p);
-    }
+    planCounter++;
+    vector<FacilityType> &rFacilitiesOptions = facilitiesOptions;
+    Plan p(planCounter, settlement, selectionPolicy, rFacilitiesOptions);
+    plans.push_back(p);
 }
 
 void Simulation::addAction(BaseAction *action)

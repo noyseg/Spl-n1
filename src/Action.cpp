@@ -5,7 +5,7 @@ using namespace std;
 
 extern Simulation *backup;
 
-BaseAction::BaseAction(){}
+BaseAction::BaseAction() {}
 
 void BaseAction::complete()
 {
@@ -14,7 +14,7 @@ void BaseAction::complete()
 void BaseAction::error(string errorMsg)
 {
     status = ActionStatus::ERROR;
-    errorMsg = errorMsg;
+    (*this).errorMsg = errorMsg;
 };
 const string &BaseAction::getErrorMsg() const
 {
@@ -29,7 +29,8 @@ const string BaseAction::getStatusString() const
     return "COMPLETED";
 }
 
-SimulateStep ::SimulateStep(const int numOfSteps) : numOfSteps(numOfSteps) {
+SimulateStep ::SimulateStep(const int numOfSteps) : numOfSteps(numOfSteps)
+{
 }
 void SimulateStep ::act(Simulation &simulation)
 {
@@ -53,13 +54,15 @@ SimulateStep *SimulateStep::clone() const
 AddPlan ::AddPlan(const string &settlementName, const string &selectionPolicy) : settlementName(settlementName), selectionPolicy(selectionPolicy) {}
 void AddPlan::act(Simulation &simulation)
 {
+    cout << simulation.isSettlementExists("anotherVillage") << endl;
     if (!simulation.isSettlementExists(settlementName) || (selectionPolicy != "nve" && selectionPolicy != "bal" && selectionPolicy != "eco"))
     {
         error("Cannot create this plan");
-        cout << "Error:" << getErrorMsg() << endl;
+        cout << "Error:" + getErrorMsg() << endl;
     }
     else
     {
+        cout << "adding Settlement = "+simulation.getSettlement(settlementName).toString()+" with policy="+selectionPolicy << endl;
         simulation.addPlan(simulation.getSettlement(settlementName), simulation.createSelectionPolicy(selectionPolicy, 0, 0, 0));
         complete();
     }
@@ -128,13 +131,13 @@ void PrintPlanStatus::act(Simulation &simulation)
     if (!simulation.isValidPlan(planId))
     {
         error("Plan doesn't exist");
+        cout << getErrorMsg() << endl;
         cout << "Error:" << getErrorMsg() << endl;
     }
     else
     {
         complete();
         simulation.getPlan(planId).printStatus();
-        
     }
 }
 
@@ -211,12 +214,20 @@ const string Close::toString() const
 
 // BackupSimulation
 
+BackupSimulation::BackupSimulation() {}
+
 void BackupSimulation::act(Simulation &simulation)
 {
-    *backup = std::move(simulation);
+    if (backup == nullptr)
+    {
+        backup = new Simulation(std::move(simulation)); // Allocate a new Simulation
+    }
+    else
+    {
+        *backup = std::move(simulation); // Overwrite the existing object
+    }
     complete();
 }
-BackupSimulation::BackupSimulation() {}
 
 BackupSimulation *BackupSimulation ::clone() const
 {
@@ -225,7 +236,7 @@ BackupSimulation *BackupSimulation ::clone() const
 
 const string BackupSimulation::toString() const
 {
-    return "BackupSimulation " + getStatusString();
+    return "backup " + getStatusString();
 }
 
 RestoreSimulation::RestoreSimulation() {}
