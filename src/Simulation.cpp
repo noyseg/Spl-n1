@@ -299,17 +299,16 @@ vector<BaseAction *> Simulation::getActionsLog() const
 
 Plan &Simulation ::getPlan(const int planId)
 {
-    // Assuming you can't delete a plan and plan counter starting from 1
-    if (planId - 1 >= 0 && planId - 1 < plans.size())
+    if (isValidPlan)
     {
-        return plans.at(planId - 1);
+        return plans[planId];
     }
     // Return error ?
 }
 
 bool Simulation::isValidPlan(int id)
 {
-    if (id - 1 >= 0 && id - 1 < plans.size())
+    if (id >= 0 && id < plans.size())
     {
         return true;
     }
@@ -317,10 +316,10 @@ bool Simulation::isValidPlan(int id)
 }
 void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy)
 {
-    planCounter++;
     vector<FacilityType> &rFacilitiesOptions = facilitiesOptions;
     Plan p(planCounter, settlement, selectionPolicy, rFacilitiesOptions);
     plans.push_back(p);
+    planCounter++;
 }
 
 void Simulation::addAction(BaseAction *action)
