@@ -75,4 +75,5 @@
             "binaryArgs": []
         }
     ],
+    "C_Cpp.errorSquiggles": "enabled",
 }

@@ -1,8 +1,9 @@
+#pragma once
 #include "Action.h"
 #include <iostream>
 using namespace std;
 
-extern Simulation *backup = nullptr;
+extern Simulation *backup;
 
 BaseAction::BaseAction()
 {

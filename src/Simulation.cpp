@@ -1,8 +1,9 @@
+#pragma once
 #include "Simulation.h"
-#include "Settlement.cpp"
+#include "Settlement.h"
 #include <iostream>
-#include "Auxiliary.cpp"
-#include "Action.cpp"
+#include "Auxiliary.h"
+#include "Action.h"
 #include <fstream>
 #include <string>
 using namespace std;

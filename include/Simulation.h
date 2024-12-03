@@ -3,7 +3,7 @@
 #include <vector>
 #include "Facility.h"
 #include "Plan.h"
-#include "Settlement.h"
+
 using std::string;
 using std::vector;
 
