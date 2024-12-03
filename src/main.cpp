@@ -2,8 +2,6 @@
 #include "Settlement.h"
 #include "SelectionPolicy.h"
 #include <iostream>
-
-#include <fstream>
 #include <string>
 
 using namespace std;
@@ -25,7 +23,7 @@ int main(int argc, char **argv)
     //     cout << "UNDER_CONSTRUCTION time left=" + std::to_string(facil->getTimeLeft()) << endl;
     // }
 
-    // // Selection Policy Test
+    // Selection Policy Test
     // NaiveSelection *ns = new NaiveSelection();
     // FacilityType ft1("Hospital", FacilityCategory::ENVIRONMENT, 1, 0, 1, 2);
     // FacilityType ft2("Bank", FacilityCategory::ECONOMY, 3, 2, 1, 1);
@@ -33,11 +31,11 @@ int main(int argc, char **argv)
     // FacilityType ft4("Beauty-Salon", FacilityCategory::LIFE_QUALITY, 1, 2, 2, 2);
 
     // const vector<FacilityType> facilitiesOptions = {ft1, ft2, ft3, ft4};
-    // // const FacilityType &chosenNaive = ns->selectFacility(facilitiesOptions);
-    // // cout << "Naive Test:" << endl;
-    // // cout << chosenNaive.getName() << endl;
-    // // const FacilityType &chosenNaive1 = ns->selectFacility(facilitiesOptions);
-    // // cout << chosenNaive1.getName() << endl;
+    // const FacilityType &chosenNaive = ns->selectFacility(facilitiesOptions);
+    // cout << "Naive Test:" << endl;
+    // cout << chosenNaive.getName() << endl;
+    // const FacilityType &chosenNaive1 = ns->selectFacility(facilitiesOptions);
+    // cout << chosenNaive1.getName() << endl;
 
     // // EconomySelection *es = new EconomySelection();
     // // const FacilityType &chosenEconomy = es->selectFacility(facilitiesOptions);
@@ -62,7 +60,7 @@ int main(int argc, char **argv)
     // // const FacilityType &chosenBalanced1 = bs->selectFacility(facilitiesOptions);
     // // cout << chosenBalanced1.getName() << endl;
 
-    // // Plan
+    // Plan
     // Plan *pl = new Plan(231,stl,ns,facilitiesOptions);
     // pl->printStatus();
     // pl->step();

@@ -238,9 +238,9 @@ void Simulation ::start()
     cout << "The simulation has started" << endl;
     while (isRunning)
     {
-        string input;
-        cin >> input;
-        vector<std::string> vectorInput = Auxiliary::parseArguments(input);
+        string userInput;
+        getline(std::cin, userInput);
+        vector<std::string> vectorInput = Auxiliary::parseArguments(userInput);
         BaseAction *action = navigateAction(vectorInput);
         if (action != nullptr)
         {
@@ -317,11 +317,12 @@ bool Simulation::isValidPlan(int id)
 }
 void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy)
 {
-    if (isSettlementExists(settlement.getName()) == false)
+    if (isSettlementExists(settlement.getName()))
     {
         planCounter++;
         vector<FacilityType> &rFacilitiesOptions = facilitiesOptions;
-        Plan *newPlan = new Plan(planCounter, settlement, selectionPolicy, rFacilitiesOptions);
+        Plan p(planCounter, settlement, selectionPolicy, rFacilitiesOptions);
+        plans.push_back(p);
     }
 }
 
@@ -343,17 +344,17 @@ bool Simulation::addSettlement(Settlement *settlement)
 
 void Simulation::step()
 {
-    for (Plan p : plans)
+    for (Plan &plan : plans)
     {
-        p.step();
+        plan.step();
     }
 }
 
 void Simulation::close()
 {
-    for (Plan p : plans)
+    for (Plan &plan : plans)
     {
-        p.printStatus();
+        plan.printStatus();
     }
     isRunning = false;
     for (BaseAction *ba : actionsLog)
