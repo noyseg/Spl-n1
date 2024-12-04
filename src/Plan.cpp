@@ -15,11 +15,11 @@ Plan::Plan(const Plan &otherPlan) : plan_id(otherPlan.plan_id),
                                     facilityOptions(otherPlan.facilityOptions), // References cannot be reseated once initialized
                                     life_quality_score(otherPlan.life_quality_score), economy_score(otherPlan.economy_score), environment_score(otherPlan.environment_score)
 {
-    for (int i = 0; i < facilities.size(); i++)
+    for (size_t i = 0; i < facilities.size(); i++)
     {
         facilities.push_back(new Facility(*otherPlan.facilities[i])); // Uses defult copy constructor of Facility
     }
-    for (int i = 0; i < underConstruction.size(); i++)
+    for (size_t i = 0; i < underConstruction.size(); i++)
     {
         underConstruction.push_back(new Facility(*otherPlan.underConstruction[i])); // Uses defult copy constructor of Facility
     }
@@ -28,14 +28,14 @@ Plan::Plan(const Plan &otherPlan) : plan_id(otherPlan.plan_id),
 // check if needed
 void Plan::clear()
 {
-    for (int i = 0; i < facilities.size(); i++)
+    for (size_t i = 0; i < facilities.size(); i++)
     {
         if (facilities[i])
         {
             delete facilities[i];
         }
     }
-    for (int i = 0; i < underConstruction.size(); i++)
+    for (size_t i = 0; i < underConstruction.size(); i++)
     {
         if (underConstruction[i])
         {
@@ -60,11 +60,11 @@ Plan::Plan(Plan &&otherPlan) : plan_id(otherPlan.plan_id),
                                life_quality_score(otherPlan.life_quality_score), economy_score(otherPlan.economy_score), environment_score(otherPlan.environment_score)
 {
     otherPlan.selectionPolicy = nullptr;
-    for (int i = 0; i < facilities.size(); i++)
+    for (size_t i = 0; i < facilities.size(); i++)
     {
         otherPlan.underConstruction[i] = nullptr;
     }
-    for (int i = 0; i < underConstruction.size(); i++)
+    for (size_t i = 0; i < underConstruction.size(); i++)
     {
         otherPlan.underConstruction[i] = nullptr;
     }
@@ -104,8 +104,8 @@ void Plan::step()
         Facility *newFacility = new Facility(selectionPolicy->selectFacility(facilityOptions), settlement.getName());
         addFacility(newFacility);
     }
-    
-    for (int i = (underConstruction.size() - 1); i >= 0; i--)
+    int j = (underConstruction.size() - 1);
+    for (int i = j; i >= 0; i--)
     {
         if (underConstruction[i]->step() == FacilityStatus::OPERATIONAL)
         {
@@ -117,12 +117,13 @@ void Plan::step()
             status = PlanStatus::AVALIABLE;
         }
     }
-
 }
+
+
 void Plan::addFacility(Facility *facility)
 {
     underConstruction.push_back(facility);
-    if (underConstruction.size() == static_cast<int>(settlement.getType()) + 1)
+    if (underConstruction.size() == static_cast<size_t>(settlement.getType()) + 1)
     {
         status = PlanStatus::BUSY;
     }
@@ -146,12 +147,12 @@ void Plan::printStatus()
     cout << "LifeQualityScore: " + std::to_string(life_quality_score) << endl;
     cout << "EconomyScore: " + std::to_string(economy_score) << endl;
     cout << "EnvironmentScore: " + std::to_string(environment_score) << endl;
-    for (int i = 0; i < facilities.size(); i++)
+    for (size_t i = 0; i < facilities.size(); i++)
     {
         cout << "facilityName: " + facilities[i]->getName() << endl;
         cout << "facilityStatus: OPERATIONAL" << endl;
     }
-    for (int i = 0; i < underConstruction.size(); i++)
+    for (size_t i = 0; i < underConstruction.size(); i++)
     {
         cout << "facilityName: " + underConstruction[i]->getName() << endl;
         cout << "facilityStatus: UNDER_CONSTRUCTIONS" << endl;

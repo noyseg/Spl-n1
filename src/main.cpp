@@ -10,7 +10,8 @@ Simulation *backup = nullptr;
 
 int main(int argc, char **argv)
 {
-    // Settlement stl("kFarSPL", SettlementType::CITY);
+    //  Settlement stl("kFar", SettlementType::CITY);
+    //  Settlement stl1("kFar11", SettlementType::CITY);
     // Facility *facil = new Facility("kindergarden", "spl2", FacilityCategory::ECONOMY, 1, 2, 1, 1);
     // cout << facil->toString() << endl;
     // FacilityStatus fs(facil->step());
@@ -23,8 +24,8 @@ int main(int argc, char **argv)
     //     cout << "UNDER_CONSTRUCTION time left=" + std::to_string(facil->getTimeLeft()) << endl;
     // }
 
-    // Selection Policy Test
-    // NaiveSelection *ns = new NaiveSelection();
+     //Selection Policy Test
+    //NaiveSelection *ns = new NaiveSelection();
     // FacilityType ft1("Hospital", FacilityCategory::ENVIRONMENT, 1, 0, 1, 2);
     // FacilityType ft2("Bank", FacilityCategory::ECONOMY, 3, 2, 1, 1);
     // FacilityType ft3("University", FacilityCategory::ECONOMY, 5, 0, 1, 2);
@@ -86,6 +87,7 @@ int main(int argc, char **argv)
 
     string configurationFile = argv[1];
     Simulation simulation(configurationFile);
+    Simulation sim(simulation);
     simulation.start();
 
     if (backup != nullptr)

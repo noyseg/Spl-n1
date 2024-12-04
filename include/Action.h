@@ -143,7 +143,6 @@ public:
     void act(Simulation &simulation) override;
     BackupSimulation *clone() const override;
     const string toString() const override;
-
 private:
 };
 
@@ -154,6 +153,5 @@ public:
     void act(Simulation &simulation) override;
     RestoreSimulation *clone() const override;
     const string toString() const override;
-
 private:
 };
