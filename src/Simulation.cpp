@@ -415,12 +415,14 @@ void Simulation::close()
             delete actionsLog[i];
         }
     }
+    actionsLog.clear();
     for (size_t i = 0; i < settlements.size(); i++){
     {
         if(settlements[i]){
             delete settlements[i];
         }
     }
+    settlements.clear();
     }
 }
 

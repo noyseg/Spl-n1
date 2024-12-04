@@ -90,7 +90,7 @@ int main(int argc, char **argv)
 
     string configurationFile = argv[1];
     Simulation simulation(configurationFile);
-    Simulation sim(simulation);
+    //Simulation sim(simulation);
     simulation.start();
 
     if (backup != nullptr)
