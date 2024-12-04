@@ -1,4 +1,3 @@
-#pragma once
 #include "Simulation.h"
 #include "Settlement.h"
 #include <iostream>
@@ -54,21 +53,15 @@ Simulation ::Simulation(const Simulation &otherSimulation) : isRunning(otherSimu
 }
 
 // move constructor
-Simulation::Simulation(const Simulation &&otherSimulation) : isRunning(otherSimulation.isRunning),
+Simulation::Simulation(Simulation &&otherSimulation) : isRunning(otherSimulation.isRunning),
                                                              planCounter(otherSimulation.planCounter),
                                                              actionsLog(std::move(otherSimulation.actionsLog)),
                                                              plans(std::move(otherSimulation.plans)),
                                                              settlements(std::move(otherSimulation.settlements)),
                                                              facilitiesOptions(std::move(otherSimulation.facilitiesOptions))
 {
-    for (Settlement *stl : otherSimulation.settlements)
-    {
-        stl = nullptr;
-    }
-    for (BaseAction *act : otherSimulation.actionsLog)
-    {
-        act = nullptr;
-    }
+    otherSimulation.settlements.clear();
+    otherSimulation.actionsLog.clear();
 }
 
 // distructor
@@ -148,22 +141,8 @@ Simulation &Simulation::operator=(Simulation &&otherSimulation)
             delete action;
         }
     }
-    for (BaseAction *action : actionsLog)
-    {
-        action = nullptr;
-    }
-    for (Settlement *settlement : settlements)
-    {
-        if (settlement)
-        {
-            settlement=nullptr;
-        }
-    }
-    actionsLog = std::move(otherSimulation.actionsLog);
-    for (Settlement *settlement : settlements)
-    {
-        settlement = nullptr;
-    }
+    actionsLog.clear();
+    settlements.clear();
     settlements = std::move(otherSimulation.settlements);
     plans = std::move(otherSimulation.plans);
     facilitiesOptions = std::move(otherSimulation.facilitiesOptions);
@@ -283,6 +262,7 @@ bool Simulation::isSettlementExists(const string &settlementName)
 
 Settlement &Simulation ::getSettlement(const string &settlementName)
 {
+    // Assuming Settlement Exist
     for (Settlement *stl : settlements)
     {
         if (stl->getName() == settlementName)
@@ -290,7 +270,8 @@ Settlement &Simulation ::getSettlement(const string &settlementName)
             return *stl; // Dereference pointer and return the object reference
         }
     }
-    // Return error ?
+    // WILL NEVER BE CALLED
+    return (*settlements.at(0));
 }
 
 vector<BaseAction *> Simulation::getActionsLog() const
@@ -300,16 +281,12 @@ vector<BaseAction *> Simulation::getActionsLog() const
 
 Plan &Simulation ::getPlan(const int planId)
 {
-    if (isValidPlan)
-    {
-        return plans[planId];
-    }
-    // Return error ?
+    return plans[planId];
 }
 
 bool Simulation::isValidPlan(int id)
 {
-    if (id >= 0 && id < plans.size())
+    if (id >= 0 && static_cast<size_t>(id) < plans.size()) // if id is negative, it will be implicitly converted to a large positive number when compared to the unsigned value, which can lead to unexpected behavior
     {
         return true;
     }

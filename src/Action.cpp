@@ -1,11 +1,10 @@
-#pragma once
 #include "Action.h"
 #include <iostream>
 using namespace std;
 
 extern Simulation *backup;
 
-BaseAction::BaseAction() {}
+BaseAction::BaseAction() :errorMsg(""), status(ActionStatus::COMPLETED){}
 
 void BaseAction::complete()
 {
@@ -55,7 +54,7 @@ AddPlan ::AddPlan(const string &settlementName, const string &selectionPolicy) :
 void AddPlan::act(Simulation &simulation)
 {
     cout << simulation.isSettlementExists("anotherVillage") << endl;
-    if (!simulation.isSettlementExists(settlementName) || (selectionPolicy != "nve" && selectionPolicy != "bal" && selectionPolicy != "eco"))
+    if (!simulation.isSettlementExists(settlementName) || (selectionPolicy != "nve" && selectionPolicy != "bal" && selectionPolicy != "eco" && selectionPolicy != "env"))
     {
         error("Cannot create this plan");
         cout << "Error:" + getErrorMsg() << endl;
@@ -250,7 +249,9 @@ void RestoreSimulation::act(Simulation &simulation)
     }
     else
     {
-        simulation = std::move(*backup);
+        // simulation = std::move(*backup);
+        simulation = *backup;
+        // cout << simulation.getActionsLog()[0]->toString()<<endl;
         complete();
     }
 }
