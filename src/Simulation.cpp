@@ -36,7 +36,7 @@ Simulation ::Simulation(const string &configFilePath) : isRunning(false), planCo
 // copy constructor
 Simulation ::Simulation(const Simulation &otherSimulation) : isRunning(otherSimulation.isRunning),
                                                              planCounter(otherSimulation.planCounter),
-                                                             actionsLog(), plans(otherSimulation.plans), settlements(), facilitiesOptions(otherSimulation.facilitiesOptions)
+                                                             actionsLog(), plans(), settlements(), facilitiesOptions(otherSimulation.facilitiesOptions)
 {
     for (size_t i = 0; i < otherSimulation.settlements.size(); i++)
     {
@@ -45,6 +45,10 @@ Simulation ::Simulation(const Simulation &otherSimulation) : isRunning(otherSimu
     for (size_t i = 0; i < otherSimulation.actionsLog.size(); i++)
     {
         actionsLog.push_back(otherSimulation.actionsLog[i]->clone());
+    }
+    for (size_t i = 0; i < otherSimulation.plans.size(); i++)
+    {
+        plans.push_back(Plan(otherSimulation.plans[i],getSettlement(otherSimulation.plans[i].getPlanSettlement())));
     }
 }
 
@@ -78,61 +82,104 @@ Simulation::~Simulation()
 }
 
 // copy operator assigment
+// Simulation &Simulation::operator=(const Simulation &otherSimulation)
+// {
+//     if (this != &otherSimulation)
+//     {
+//         isRunning = otherSimulation.isRunning;
+//         planCounter = otherSimulation.planCounter;
+//         // Clear existing actionsLog
+//         for (size_t i = 0; i < actionsLog.size(); i++)
+//         {
+//             if (actionsLog[i]){
+//                 delete actionsLog[i]; /// see if we have leak 
+//             }
+//         }
+//         actionsLog.clear();
+//         for (size_t i = 0; i < otherSimulation.actionsLog.size(); i++){
+//             actionsLog.push_back(otherSimulation.actionsLog[i]->clone());
+//         }
+//         // Clear existing settlements
+//         for (size_t i = 0; i < settlements.size(); i++){
+//             const string myStlName = settlements[i]->getName();
+//             bool settlementsInBackup = false;
+//             for (size_t j = 0; settlementsInBackup == false & j < otherSimulation.settlements.size(); j++){
+//                 if (otherSimulation.settlements[j]->getName() == myStlName){
+//                     settlementsInBackup = true;
+//                 }
+//             }
+//             if (!settlementsInBackup){
+//                 if (settlements[i]){
+//                     delete settlements[i];
+//                 }
+//             }
+//         }
+//         settlements.clear();
+//         for (size_t i = 0; i < otherSimulation.settlements.size(); i++){
+//             settlements.push_back(otherSimulation.settlements[i]); // Delete settlement if it's not in use
+//         }
+//         // Rebuild the plans vector
+//         plans.clear();
+//         // for (const Plan &plan : otherSimulation.plans)
+//         // {
+//         //     plans.push_back(plan);
+//         // }
+//         // here problem 
+//         for (size_t i =0; i < otherSimulation.plans.size(); i++)
+//         {
+//             plans.push_back(Plan(otherSimulation.plans[i]));
+//         }
+//         facilitiesOptions.clear();
+//         for (FacilityType ft : otherSimulation.facilitiesOptions)
+//         {
+//             facilitiesOptions.push_back(ft);
+//         }
+//     }
+//     return *this;
+// }
+
 Simulation &Simulation::operator=(const Simulation &otherSimulation)
 {
     if (this != &otherSimulation)
     {
         isRunning = otherSimulation.isRunning;
         planCounter = otherSimulation.planCounter;
-        // Clear existing actionsLog
-        for (size_t i = 0; i < actionsLog.size(); i++)
-        {
-            if (actionsLog[i]){
-                delete actionsLog[i]; /// see if we have leak 
-            }
-        }
-        actionsLog.clear();
-        for (size_t i = 0; i < otherSimulation.actionsLog.size(); i++){
-            actionsLog.push_back(otherSimulation.actionsLog[i]->clone());
-        }
         // Clear existing settlements
         for (size_t i = 0; i < settlements.size(); i++){
-            const string myStlName = settlements[i]->getName();
-            bool settlementsInBackup = false;
-            for (size_t j = 0; settlementsInBackup == false & j < otherSimulation.settlements.size(); j++){
-                if (otherSimulation.settlements[j]->getName() == myStlName){
-                    settlementsInBackup = true;
-                }
-            }
-            if (!settlementsInBackup){
-                if (settlements[i]){
-                    delete settlements[i];
-                }
-            }
+            if (settlements[i]){
+                delete settlements[i];
+             }
         }
+        // Clear existing settlements
         settlements.clear();
-        for (size_t i = 0; i < otherSimulation.settlements.size(); i++){
-            settlements.push_back(otherSimulation.settlements[i]); // Delete settlement if it's not in use
+        for (size_t i = 0; i < actionsLog.size(); i++){
+             if (actionsLog[i]){
+                delete actionsLog[i];
+             }
         }
-        // Rebuild the plans vector
+        actionsLog.clear();
         plans.clear();
-        // for (const Plan &plan : otherSimulation.plans)
-        // {
-        //     plans.push_back(plan);
-        // }
-        // here problem 
-        for (size_t i =0; i < otherSimulation.plans.size(); i++)
-        {
-            plans.push_back(Plan(otherSimulation.plans[i]));
-        }
+        actionsLog.clear();
         facilitiesOptions.clear();
         for (FacilityType ft : otherSimulation.facilitiesOptions)
         {
             facilitiesOptions.push_back(ft);
         }
+        for (size_t i = 0; i < otherSimulation.settlements.size(); i++) {
+             settlements.push_back(new Settlement(*otherSimulation.settlements[i])); // Delete settlement if it's not in use
+        }
+        for (size_t i = 0; i < otherSimulation.actionsLog.size(); i++) {
+             actionsLog.push_back(otherSimulation.actionsLog[i]->clone()); // Delete settlement if it's not in use
+        }
+        for (size_t i = 0; i < otherSimulation.plans.size(); i++)
+        {
+            plans.push_back(Plan(otherSimulation.plans[i],getSettlement(otherSimulation.plans[i].getPlanSettlement())));
+        }
     }
     return *this;
 }
+
+
 
 // move operator assigment
 Simulation &Simulation::operator=(Simulation &&otherSimulation)
@@ -294,15 +341,13 @@ bool Simulation::isSettlementExists(const string &settlementName)
 // Assume settlement exist 
 Settlement &Simulation ::getSettlement(const string &settlementName)
 {
-    for (Settlement *stl : settlements)
-    {
-        if (stl->getName() == settlementName)
+    for (size_t i=0; i < settlements.size(); i++){
+        if (settlements[i]->getName() == settlementName)
         {
-            return *stl; // Dereference pointer and return the object reference
+            return *settlements[i]; // Dereference pointer and return the object reference
         }
     }
     return *settlements[0]; // This line will never be called - chdfskdfsld,fdv
-
 }
 
 vector<BaseAction *> Simulation::getActionsLog() const
