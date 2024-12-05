@@ -15,20 +15,23 @@ Simulation ::Simulation(const string &configFilePath) : isRunning(false), planCo
     string line;
     while (getline(File, line))
     {
-        vector<std::string> read = Auxiliary::parseArguments(line);
-        if (read[0] == "settlement")
-        {
-            Settlement *stl = new Settlement(read[1], Settlement::stringToSettlementType(read[2]));
-            addSettlement(stl);
-        }
-        else if (read[0] == "facility")
-        {
-            FacilityType facil(FacilityType(read[1], FacilityType::stringToFacilityCategory(read[2]), std::stoi(read[3]), std::stoi(read[4]), std::stoi(read[5]), std::stoi(read[6])));
-            addFacility(facil);
-        }
-        else if (read[0] == "plan")
-        {
-            addPlan(getSettlement(read[1]), createSelectionPolicy(read[2], 0, 0, 0));
+        // line is empty do not read it 
+        if (line != "\r"){
+            vector<std::string> read = Auxiliary::parseArguments(line);
+            if (read[0] == "settlement")
+            {
+                Settlement *stl = new Settlement(read[1], Settlement::stringToSettlementType(read[2]));
+                addSettlement(stl);
+            }
+            else if (read[0] == "facility")
+            {
+                FacilityType facil(FacilityType(read[1], FacilityType::stringToFacilityCategory(read[2]), std::stoi(read[3]), std::stoi(read[4]), std::stoi(read[5]), std::stoi(read[6])));
+                addFacility(facil);
+            }
+            else if (read[0] == "plan")
+            {
+                addPlan(getSettlement(read[1]), createSelectionPolicy(read[2], 0, 0, 0));
+            }
         }
     }
 }
@@ -81,63 +84,6 @@ Simulation::~Simulation()
     settlements.clear();
 }
 
-// copy operator assigment
-// Simulation &Simulation::operator=(const Simulation &otherSimulation)
-// {
-//     if (this != &otherSimulation)
-//     {
-//         isRunning = otherSimulation.isRunning;
-//         planCounter = otherSimulation.planCounter;
-//         // Clear existing actionsLog
-//         for (size_t i = 0; i < actionsLog.size(); i++)
-//         {
-//             if (actionsLog[i]){
-//                 delete actionsLog[i]; /// see if we have leak 
-//             }
-//         }
-//         actionsLog.clear();
-//         for (size_t i = 0; i < otherSimulation.actionsLog.size(); i++){
-//             actionsLog.push_back(otherSimulation.actionsLog[i]->clone());
-//         }
-//         // Clear existing settlements
-//         for (size_t i = 0; i < settlements.size(); i++){
-//             const string myStlName = settlements[i]->getName();
-//             bool settlementsInBackup = false;
-//             for (size_t j = 0; settlementsInBackup == false & j < otherSimulation.settlements.size(); j++){
-//                 if (otherSimulation.settlements[j]->getName() == myStlName){
-//                     settlementsInBackup = true;
-//                 }
-//             }
-//             if (!settlementsInBackup){
-//                 if (settlements[i]){
-//                     delete settlements[i];
-//                 }
-//             }
-//         }
-//         settlements.clear();
-//         for (size_t i = 0; i < otherSimulation.settlements.size(); i++){
-//             settlements.push_back(otherSimulation.settlements[i]); // Delete settlement if it's not in use
-//         }
-//         // Rebuild the plans vector
-//         plans.clear();
-//         // for (const Plan &plan : otherSimulation.plans)
-//         // {
-//         //     plans.push_back(plan);
-//         // }
-//         // here problem 
-//         for (size_t i =0; i < otherSimulation.plans.size(); i++)
-//         {
-//             plans.push_back(Plan(otherSimulation.plans[i]));
-//         }
-//         facilitiesOptions.clear();
-//         for (FacilityType ft : otherSimulation.facilitiesOptions)
-//         {
-//             facilitiesOptions.push_back(ft);
-//         }
-//     }
-//     return *this;
-// }
-
 Simulation &Simulation::operator=(const Simulation &otherSimulation)
 {
     if (this != &otherSimulation)
@@ -180,7 +126,6 @@ Simulation &Simulation::operator=(const Simulation &otherSimulation)
 }
 
 
-
 // move operator assigment
 Simulation &Simulation::operator=(Simulation &&otherSimulation)
 {
@@ -196,8 +141,8 @@ Simulation &Simulation::operator=(Simulation &&otherSimulation)
             delete actionsLog[i];
         }
     }
-    actionsLog.clear();
-    settlements.clear();
+    //actionsLog.clear();
+    //settlements.clear();
     actionsLog = std::move(otherSimulation.actionsLog);
     settlements = std::move(otherSimulation.settlements);
     plans = std::move(otherSimulation.plans);
