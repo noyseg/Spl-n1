@@ -185,30 +185,20 @@ Simulation &Simulation::operator=(const Simulation &otherSimulation)
 Simulation &Simulation::operator=(Simulation &&otherSimulation)
 {
     isRunning = otherSimulation.isRunning;
+    for (size_t i = 0; i < settlements.size(); i++){
+        if (settlements[i]){
+            delete settlements[i];
+        }
+    }
     planCounter = otherSimulation.planCounter;
-    for (size_t i = 0; i < actionsLog.size(); i++)
-    {
+    for (size_t i = 0; i < actionsLog.size(); i++){
         if (actionsLog[i]){
-            delete actionsLog[i]; /// see if we have leak 
+            delete actionsLog[i];
         }
     }
     actionsLog.clear();
-    actionsLog = std::move(otherSimulation.actionsLog);
-    for (size_t i = 0; i < settlements.size(); i++){
-        const string myStlName = settlements[i]->getName();
-        bool settlementsInBackup = false;
-        for (size_t j = 0; settlementsInBackup == false & j < otherSimulation.settlements.size(); j++){
-            if (otherSimulation.settlements[j]->getName() == myStlName){
-                settlementsInBackup = true;
-            }
-        }
-        if (!settlementsInBackup){
-            if (settlements[i]){
-                delete settlements[i];
-            }
-        }
-    }
     settlements.clear();
+    actionsLog = std::move(otherSimulation.actionsLog);
     settlements = std::move(otherSimulation.settlements);
     plans = std::move(otherSimulation.plans);
     facilitiesOptions = std::move(otherSimulation.facilitiesOptions);

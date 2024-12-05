@@ -56,6 +56,7 @@ void Plan::clear()
             delete facilities[i];
         }
     }
+    facilities.clear();
     for (size_t i = 0; i < underConstruction.size(); i++)
     {
         if (underConstruction[i])
@@ -63,6 +64,7 @@ void Plan::clear()
             delete underConstruction[i];
         }
     }
+    underConstruction.clear();
 }
 
 // distructor

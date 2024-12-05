@@ -1,5 +1,5 @@
 # Please implement your Makefile rules and targets below.
-all: clean link run
+all: clean link run checkMemo
 
 link: compile
 	@echo "Linking Object files"
@@ -19,7 +19,9 @@ compile: src/main.cpp src/Auxiliary.cpp
 run:
 	./bin/main config_file.txt
 
-
 clean:
 	rm -f bin/*
+
+checkMemo:
+	valgrind --leak-check=full --show-reachable=yes ./bin/main config_file.txt
 # Customize this file to define how to build your project.
