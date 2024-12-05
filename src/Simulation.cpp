@@ -240,17 +240,6 @@ void Simulation ::start()
                 addAction(action);
                 (*action).act(*this);
             }
-            else if (actionName.find("Restore") == 0)
-            { // no document of restore
-                (*action).act(*this);
-                if (action->getStatus() == ActionStatus::ERROR)
-                {
-                    addAction(action);
-                }
-                else{
-                    delete action;
-                }
-            }
             else
             {
                 (*action).act(*this);
