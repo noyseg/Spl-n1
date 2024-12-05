@@ -32,6 +32,8 @@ class Plan {
         void addFacility(Facility* facility);
         const string toString() const;
         const string getPlanSettlement() const;
+        void printPlanValuesSummery();
+        const vector<Facility*> &getUnderConstruction() const;
 
     private:
         int plan_id;

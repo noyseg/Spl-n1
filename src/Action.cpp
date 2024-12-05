@@ -175,7 +175,15 @@ void ChangePlanPolicy::act(Simulation &simulation)
         cout << "previous policy: " << plan.getSelectionPolicyName() << endl;
         cout << "newPolicy: " << newPolicy << endl;
         // setSelectionPolicy function will steal the resources and handle the deletion current selection policy 
-        SelectionPolicy *sp = simulation.createSelectionPolicy(newPolicy, plan.getlifeQualityScore(), plan.getEconomyScore(), plan.getEnvironmentScore());
+        int lifeQualityScore = plan.getlifeQualityScore();
+        int economyScore = plan.getEconomyScore();
+        int environmentScore = plan.getEnvironmentScore();
+        for(Facility *underConstructio : plan.getUnderConstruction()){
+                lifeQualityScore += underConstructio->getLifeQualityScore();
+                economyScore += underConstructio->getEconomyScore();
+                environmentScore += underConstructio->getEnvironmentScore();
+        }
+        SelectionPolicy *sp = simulation.createSelectionPolicy(newPolicy, lifeQualityScore, economyScore, environmentScore);
         simulation.getPlan(planId).setSelectionPolicy(sp);
     }
 }
