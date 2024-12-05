@@ -49,6 +49,10 @@ Plan::Plan(const Plan &otherPlan, Settlement &settlement) : plan_id(otherPlan.pl
 // check if needed
 void Plan::clear()
 {
+    if (selectionPolicy){
+        delete selectionPolicy;
+    }
+    selectionPolicy = nullptr;
     for (size_t i = 0; i < facilities.size(); i++)
     {
         if (facilities[i])
@@ -115,7 +119,10 @@ const string Plan::getSelectionPolicyName() const
 
 void Plan::setSelectionPolicy(SelectionPolicy *selectionPolicy)
 {
-    (*this).selectionPolicy = selectionPolicy;
+    if (this->selectionPolicy){
+        delete this->selectionPolicy;
+    }
+    (*this).selectionPolicy = std::move(selectionPolicy); // selectionPolicy was built only as a "rvalue"so we can steal resources 
 }
 
 // check same name

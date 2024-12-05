@@ -70,6 +70,7 @@ Simulation::Simulation(Simulation &&otherSimulation) : isRunning(otherSimulation
 // distructor
 Simulation::~Simulation()
 {
+
     for (size_t i = 0; i < actionsLog.size(); i++)
     {
         if (actionsLog[i])
@@ -145,8 +146,8 @@ Simulation &Simulation::operator=(Simulation &&otherSimulation)
             delete actionsLog[i];
         }
     }
-    //actionsLog.clear();
-    //settlements.clear();
+    actionsLog.clear();
+    settlements.clear();
     actionsLog = std::move(otherSimulation.actionsLog);
     settlements = std::move(otherSimulation.settlements);
     plans = std::move(otherSimulation.plans);
@@ -334,6 +335,9 @@ bool Simulation::addSettlement(Settlement *settlement)
         settlements.push_back(settlement);
         return true;
     }
+    else{
+        delete settlement;
+    }
     return false;
 }
 
@@ -362,15 +366,13 @@ void Simulation::close()
     actionsLog.clear();
     for (size_t i = 0; i < settlements.size(); i++){
     {
+        if (settlements[i])
         {
-            if (settlements[i])
-            {
-                delete settlements[i];
-            }
+            delete settlements[i];
         }
     }
-    settlements.clear();
     }
+    settlements.clear();
 }
 
 void Simulation ::open()
@@ -378,6 +380,7 @@ void Simulation ::open()
     isRunning = true;
 }
 
+// Pointer will be used for change selection polity afterward. 
 SelectionPolicy *Simulation ::createSelectionPolicy(const string &policyName, int lifeQualityScore, int economyScore, int environmentScore)
 {
     if (policyName == "nve")
