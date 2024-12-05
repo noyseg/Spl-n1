@@ -242,6 +242,9 @@ void Simulation ::start()
                 {
                     addAction(action);
                 }
+                else{
+                    delete action;
+                }
             }
             else
             {

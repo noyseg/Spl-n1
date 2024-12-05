@@ -122,7 +122,7 @@ void Plan::setSelectionPolicy(SelectionPolicy *selectionPolicy)
     if (this->selectionPolicy){
         delete this->selectionPolicy;
     }
-    (*this).selectionPolicy = std::move(selectionPolicy); // selectionPolicy was built only as a "rvalue"so we can steal resources 
+    (*this).selectionPolicy = std::move(selectionPolicy); // selectionPolicy was built only as a "rvalue"so we can steal resources
 }
 
 // check same name

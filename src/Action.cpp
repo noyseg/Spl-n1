@@ -67,7 +67,6 @@ void AddPlan::act(Simulation &simulation)
     }
     else
     {
-        cout << "adding Settlement = "+simulation.getSettlement(settlementName).toString()+" with policy="+selectionPolicy << endl;
         simulation.addPlan(simulation.getSettlement(settlementName), simulation.createSelectionPolicy(selectionPolicy, 0, 0, 0));
         complete();
     }
