@@ -12,13 +12,13 @@ class SelectionPolicy;
 
 class Simulation {
     public:
-        Simulation(const string &configFilePath);
-        Simulation(const Simulation &otherSimulation);
-        Simulation(Simulation &&otherSimulation);
-        ~Simulation();
-        Simulation &operator=(const Simulation &otherSimulation);
-        Simulation &operator=(Simulation &&otherSimulation);
-        BaseAction* navigateAction(vector<std::string> vectorInput);
+        Simulation(const string &configFilePath); // Constructor 
+        Simulation(const Simulation &otherSimulation); // Copy constructor
+        Simulation(Simulation &&otherSimulation); // Move constructor 
+        ~Simulation(); // Distructor
+        Simulation &operator=(const Simulation &otherSimulation); // Assignment opertaor
+        Simulation &operator=(Simulation &&otherSimulation); // Move assignment opertaor
+        BaseAction* navigateAction(vector<std::string> vectorInput); // 
         void start();
         void addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy);
         void addAction(BaseAction *action);
@@ -26,13 +26,14 @@ class Simulation {
         bool addFacility(FacilityType facility);
         bool isSettlementExists(const string &settlementName);
         Settlement &getSettlement(const string &settlementName);
-        vector<BaseAction*> getActionsLog()const;
+        vector<BaseAction*> getActionsLog() const; // For log action - in order to print each action 
         Plan &getPlan(const int planID);
-        bool isValidPlan(int id);
+        bool isValidPlan(int id); // Check if plan is in range of currnet plans
         void step();
         void close();
         void open();
-        SelectionPolicy *createSelectionPolicy(const string &policyName,int lifeQualityScore, int economyScore, int environmentScore);
+        // Creates new selection policy according to input string, with given values
+        SelectionPolicy *createSelectionPolicy(const string &policyName,int lifeQualityScore, int economyScore, int environmentScore); 
 
 private:
     bool isRunning;

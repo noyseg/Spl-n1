@@ -39,12 +39,6 @@ void BalancedSelection::setScores(int addLifeQualityScore, int addEconomyScore, 
     EnvironmentScore += addEnvironmentScore;
 }
 
-// void BalancedSelection::printScores(){
-//     cout << "L" << LifeQualityScore << endl;
-//     cout <<  "E" <<EconomyScore << endl;
-//     cout <<  "En" << EnvironmentScore << endl;
-// }
-
 // Returns the distance between the maximun value that will be made by adding plan scores to the minimum value that will be made by adding plan scores
 int BalancedSelection::distance(int sumLifeQualityScore, int sumEconomyScore, int sumEnvironmentScore){
      int maximum = std::max({sumLifeQualityScore,sumEconomyScore,sumEnvironmentScore});
@@ -57,7 +51,7 @@ int BalancedSelection::distance(int sumLifeQualityScore, int sumEconomyScore, in
 const FacilityType& BalancedSelection::selectFacility(const vector<FacilityType>& facilitiesOptions){
     int minI = 0; 
     int minDistance = distance(LifeQualityScore+facilitiesOptions[0].getLifeQualityScore(),EconomyScore+facilitiesOptions[0].getEconomyScore(),EnvironmentScore + facilitiesOptions[0].getEnvironmentScore());
-    // if minDistance == 0 we need to take the first one that was checked 
+    // If minDistance == 0 we need to take the first one that was checked 
     if(minDistance != 0){
         for (size_t i=1; i <facilitiesOptions.size();i++){
             int optionalMinDistance = distance(LifeQualityScore+facilitiesOptions[i].getLifeQualityScore(),EconomyScore+facilitiesOptions[i].getEconomyScore(),EnvironmentScore + facilitiesOptions[i].getEnvironmentScore());

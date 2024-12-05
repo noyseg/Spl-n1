@@ -222,10 +222,10 @@ const string ChangePlanPolicy::toString() const
     return "changePolicy: " + std::to_string(planId) + " " + newPolicy + " " + getStatusString();
 }
 
-//defualt constructor for PrintActionsLog
+// Defualt constructor for PrintActionsLog
 PrintActionsLog ::PrintActionsLog() {}
 
-//printing each action in the action log of the simulation
+// Printing each action in the action log of the simulation
 void PrintActionsLog::act(Simulation &simulation)
 {
     for (BaseAction *bs : simulation.getActionsLog())
@@ -291,10 +291,10 @@ const string BackupSimulation::toString() const
     return "backup " + getStatusString();
 }
 
-//constructor for RestoreSimulation
+// Constructor for RestoreSimulation
 RestoreSimulation::RestoreSimulation() {}
 
-//performing a restore to the current simulation if a backup was executed before 
+// Performing a restore to the current simulation if a backup was executed before 
 void RestoreSimulation::act(Simulation &simulation)
 {
     if (backup == nullptr)
@@ -304,7 +304,7 @@ void RestoreSimulation::act(Simulation &simulation)
     }
     else
     {
-        simulation = *backup;//using operator=(const Simulation &otherSimulation) in simulation
+        simulation = *backup; // Using operator=(const Simulation &otherSimulation) in simulation
         complete();
     }
 }

@@ -7,7 +7,7 @@
 #include <string>
 using namespace std;
 
-// constructor
+// Constructor
 // Assuming configFile input is valid, can be empty and with empty lines
 Simulation ::Simulation(const string &configFilePath) : isRunning(false), planCounter(0),
                                                         actionsLog(), plans(), settlements(), facilitiesOptions()
@@ -32,13 +32,14 @@ Simulation ::Simulation(const string &configFilePath) : isRunning(false), planCo
             }
             else if (read[0] == "plan")
             {
+                // intilize selectionPolicy value's for bal, no actions were done and therefore values are zeros 
                 addPlan(getSettlement(read[1]), createSelectionPolicy(read[2], 0, 0, 0));
             }
         }
     }
 }
 
-// copy constructor
+// Copy constructor
 Simulation ::Simulation(const Simulation &otherSimulation) : isRunning(otherSimulation.isRunning),
                                                              planCounter(otherSimulation.planCounter),
                                                              actionsLog(), plans(), settlements(), facilitiesOptions(otherSimulation.facilitiesOptions)
@@ -60,7 +61,7 @@ Simulation ::Simulation(const Simulation &otherSimulation) : isRunning(otherSimu
     }
 }
 
-// move constructor
+// Move constructor
 Simulation::Simulation(Simulation &&otherSimulation) : isRunning(otherSimulation.isRunning),
                                                        planCounter(otherSimulation.planCounter),
                                                        actionsLog(std::move(otherSimulation.actionsLog)),
@@ -68,12 +69,12 @@ Simulation::Simulation(Simulation &&otherSimulation) : isRunning(otherSimulation
                                                        settlements(std::move(otherSimulation.settlements)),
                                                        facilitiesOptions(std::move(otherSimulation.facilitiesOptions))
 {
-    // Clears the moved instance's data
+    // Clears the moved stolen data beacuse rvalue, In order to prevent double deletion
     otherSimulation.settlements.clear();
     otherSimulation.actionsLog.clear();
 }
 
-// distructor
+// Distructor
 Simulation::~Simulation()
 {
     for (size_t i = 0; i < actionsLog.size(); i++)
@@ -94,6 +95,7 @@ Simulation::~Simulation()
     settlements.clear();
 }
 
+// Assignment opertaor
 Simulation &Simulation::operator=(const Simulation &otherSimulation)
 {
     if (this != &otherSimulation)
@@ -108,8 +110,8 @@ Simulation &Simulation::operator=(const Simulation &otherSimulation)
                 delete settlements[i];
             }
         }
-        // Clear existing settlements
         settlements.clear();
+        // Clear existing actionsLog
         for (size_t i = 0; i < actionsLog.size(); i++)
         {
             if (actionsLog[i])
@@ -119,19 +121,19 @@ Simulation &Simulation::operator=(const Simulation &otherSimulation)
         }
         actionsLog.clear();
         plans.clear();
-        actionsLog.clear();
         facilitiesOptions.clear();
+        // Deep copy of facilitiesOptions, settlements, actionsLog, plans
         for (FacilityType ft : otherSimulation.facilitiesOptions)
         {
             facilitiesOptions.push_back(ft);
         }
         for (size_t i = 0; i < otherSimulation.settlements.size(); i++)
         {
-            settlements.push_back(new Settlement(*otherSimulation.settlements[i])); // Delete settlement if it's not in use
+            settlements.push_back(new Settlement(*otherSimulation.settlements[i]));
         }
         for (size_t i = 0; i < otherSimulation.actionsLog.size(); i++)
         {
-            actionsLog.push_back(otherSimulation.actionsLog[i]->clone()); // Delete settlement if it's not in use
+            actionsLog.push_back(otherSimulation.actionsLog[i]->clone());
         }
         for (size_t i = 0; i < otherSimulation.plans.size(); i++)
         {
@@ -141,9 +143,10 @@ Simulation &Simulation::operator=(const Simulation &otherSimulation)
     return *this;
 }
 
-// move operator assigment
+// Move assignment opertaor
 Simulation &Simulation::operator=(Simulation &&otherSimulation)
 {
+    // Releasing old resources to prevent memory leaks
     isRunning = otherSimulation.isRunning;
     for (size_t i = 0; i < settlements.size(); i++)
     {
@@ -162,6 +165,7 @@ Simulation &Simulation::operator=(Simulation &&otherSimulation)
     }
     actionsLog.clear();
     settlements.clear();
+    // "Stealing" resources from the moved simulation
     actionsLog = std::move(otherSimulation.actionsLog);
     settlements = std::move(otherSimulation.settlements);
     plans = std::move(otherSimulation.plans);
@@ -169,8 +173,12 @@ Simulation &Simulation::operator=(Simulation &&otherSimulation)
     return *this;
 }
 
+// Creates an appropriate action object based on user input
+// VectorInput A vector of strings representing user input commands
+// Returns A pointer to a BaseAction object, or nullptr if the input is invalid
 BaseAction *Simulation::navigateAction(vector<std::string> vectorInput)
 {
+    // Navigate based on vector size first
     if (vectorInput.size() == 1)
     {
         if (vectorInput[0] == "close")
@@ -187,14 +195,12 @@ BaseAction *Simulation::navigateAction(vector<std::string> vectorInput)
         }
         else if (vectorInput[0] == "restore")
         {
-            // remeber to remove last resotre if needed
             return new RestoreSimulation();
         }
     }
     if (vectorInput.size() == 2)
     {
-        // Print plan status
-        // check is valid
+        // Print plan status checks that plan_id is valid
         if (vectorInput[0] == "planStatus")
         {
             return new PrintPlanStatus(std::stoi(vectorInput[1]));
@@ -228,9 +234,11 @@ BaseAction *Simulation::navigateAction(vector<std::string> vectorInput)
             return new AddFacility(vectorInput[1], facilType, std::stoi(vectorInput[3]), std::stoi(vectorInput[4]), std::stoi(vectorInput[5]), std::stoi(vectorInput[6]));
         }
     }
+    // No matched action was found
     return nullptr;
 }
 
+// Starts the simulation preforms actions based on user input,
 void Simulation ::start()
 {
     open();
@@ -245,14 +253,14 @@ void Simulation ::start()
         {
             const string actionName = action->toString();
             if (actionName.find("backup") == 0)
-            { // document backup
+            {   // In order to document backup
                 addAction(action);
                 (*action).act(*this);
             }
             else
             {
                 (*action).act(*this);
-                addAction(action); // keep action with current status
+                addAction(action); // Documant action with current status
             }
         }
         else
@@ -262,6 +270,7 @@ void Simulation ::start()
     }
 }
 
+// Adds a facility to the simulation, return true if facility was not already simulation and therfore was added and false otherwise
 bool Simulation::addFacility(FacilityType facility)
 {
     for (FacilityType ft : facilitiesOptions)
@@ -275,6 +284,7 @@ bool Simulation::addFacility(FacilityType facility)
     return true;
 }
 
+// Returns true if settlement is already in simulation (by its name) and false otherwise
 bool Simulation::isSettlementExists(const string &settlementName)
 {
     bool isExist = false;
@@ -301,26 +311,32 @@ Settlement &Simulation ::getSettlement(const string &settlementName)
     return *settlements[0]; // This line will never be called
 }
 
+// Returns actionLog
+// For log action - in order to print each action
 vector<BaseAction *> Simulation::getActionsLog() const
 {
     return actionsLog;
 }
 
+// Returns a plan from plans with given planId
 Plan &Simulation ::getPlan(const int planId)
 {
     // Assuming we checked for validity before ask for the plan
     return plans[planId];
 }
 
+// Check if plan is in range of currnet plans
+// Assume all plans id's are in sequence
 bool Simulation::isValidPlan(int id)
 {
-    if (id >= 0 && static_cast<size_t>(id) < plans.size()) // check for size t!!!!!!
+    if (id >= 0 && static_cast<size_t>(id) < plans.size())
     {
         return true;
     }
     return false;
 }
 
+// Adds a plan to the simulation, keeps plans id's in a sequence
 void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy)
 {
     vector<FacilityType> &rFacilitiesOptions = facilitiesOptions;
@@ -329,11 +345,13 @@ void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectio
     planCounter++;
 }
 
+// Adds an action to the actionsLog
 void Simulation::addAction(BaseAction *action)
 {
     actionsLog.push_back(action);
 }
 
+// Adds a settlement to the simulation, return true if settelment is valid and therfore was added and false otherwise
 bool Simulation::addSettlement(Settlement *settlement)
 {
     string settlementName = settlement->getName();
@@ -344,11 +362,13 @@ bool Simulation::addSettlement(Settlement *settlement)
     }
     else
     {
+        // Prevent memory leak
         delete settlement;
     }
     return false;
 }
 
+// Promote the simulation by one step for each of the plans 
 void Simulation::step()
 {
     for (Plan &plan : plans)
@@ -357,6 +377,7 @@ void Simulation::step()
     }
 }
 
+// Closes the simulation, prints all plan summery, clears from heap relevent data 
 void Simulation::close()
 {
     for (Plan &plan : plans)
@@ -364,6 +385,7 @@ void Simulation::close()
         plan.printPlanValuesSummery();
     }
     isRunning = false;
+    // Releasing old resources to prevent memory leaks
     for (size_t i = 0; i < actionsLog.size(); i++)
     {
         if (actionsLog[i])
@@ -382,12 +404,15 @@ void Simulation::close()
     settlements.clear();
 }
 
+// Sets simulation's status to be running 
 void Simulation ::open()
 {
     isRunning = true;
 }
 
-// Pointer will be used for change selection polity afterward.
+// Assume policyName is valisd
+// Creates new selection policy according to input string, with given values
+// If policyName is not "bal" we don't uses lifeQualityScore, economyScore and environmentScore
 SelectionPolicy *Simulation ::createSelectionPolicy(const string &policyName, int lifeQualityScore, int economyScore, int environmentScore)
 {
     if (policyName == "nve")
@@ -402,7 +427,7 @@ SelectionPolicy *Simulation ::createSelectionPolicy(const string &policyName, in
     {
         return new EconomySelection();
     }
-    else
+    else // "env"
     {
         return new SustainabilitySelection();
     }

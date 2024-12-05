@@ -1,6 +1,5 @@
 #include "Settlement.h"
 
-// class Settlement{
 // constructor
 Settlement::Settlement(const string &name, SettlementType type)
     : name(name), type(type) {}
