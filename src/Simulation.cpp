@@ -15,8 +15,9 @@ Simulation ::Simulation(const string &configFilePath) : isRunning(false), planCo
     string line;
     while (getline(File, line))
     {
-        // line is empty do not read it 
-        if (line != "\r"){
+        // line is empty do not read it
+        if (line != "\r")
+        {
             vector<std::string> read = Auxiliary::parseArguments(line);
             if (read[0] == "settlement")
             {
@@ -51,7 +52,7 @@ Simulation ::Simulation(const Simulation &otherSimulation) : isRunning(otherSimu
     }
     for (size_t i = 0; i < otherSimulation.plans.size(); i++)
     {
-        plans.push_back(Plan(otherSimulation.plans[i],getSettlement(otherSimulation.plans[i].getPlanSettlement())));
+        plans.push_back(Plan(otherSimulation.plans[i], getSettlement(otherSimulation.plans[i].getPlanSettlement())));
     }
 }
 
@@ -95,17 +96,21 @@ Simulation &Simulation::operator=(const Simulation &otherSimulation)
         isRunning = otherSimulation.isRunning;
         planCounter = otherSimulation.planCounter;
         // Clear existing settlements
-        for (size_t i = 0; i < settlements.size(); i++){
-            if (settlements[i]){
+        for (size_t i = 0; i < settlements.size(); i++)
+        {
+            if (settlements[i])
+            {
                 delete settlements[i];
-             }
+            }
         }
         // Clear existing settlements
         settlements.clear();
-        for (size_t i = 0; i < actionsLog.size(); i++){
-             if (actionsLog[i]){
+        for (size_t i = 0; i < actionsLog.size(); i++)
+        {
+            if (actionsLog[i])
+            {
                 delete actionsLog[i];
-             }
+            }
         }
         actionsLog.clear();
         plans.clear();
@@ -115,38 +120,43 @@ Simulation &Simulation::operator=(const Simulation &otherSimulation)
         {
             facilitiesOptions.push_back(ft);
         }
-        for (size_t i = 0; i < otherSimulation.settlements.size(); i++) {
-             settlements.push_back(new Settlement(*otherSimulation.settlements[i])); // Delete settlement if it's not in use
+        for (size_t i = 0; i < otherSimulation.settlements.size(); i++)
+        {
+            settlements.push_back(new Settlement(*otherSimulation.settlements[i])); // Delete settlement if it's not in use
         }
-        for (size_t i = 0; i < otherSimulation.actionsLog.size(); i++) {
-             actionsLog.push_back(otherSimulation.actionsLog[i]->clone()); // Delete settlement if it's not in use
+        for (size_t i = 0; i < otherSimulation.actionsLog.size(); i++)
+        {
+            actionsLog.push_back(otherSimulation.actionsLog[i]->clone()); // Delete settlement if it's not in use
         }
         for (size_t i = 0; i < otherSimulation.plans.size(); i++)
         {
-            plans.push_back(Plan(otherSimulation.plans[i],getSettlement(otherSimulation.plans[i].getPlanSettlement())));
+            plans.push_back(Plan(otherSimulation.plans[i], getSettlement(otherSimulation.plans[i].getPlanSettlement())));
         }
     }
     return *this;
 }
 
-
 // move operator assigment
 Simulation &Simulation::operator=(Simulation &&otherSimulation)
 {
     isRunning = otherSimulation.isRunning;
-    for (size_t i = 0; i < settlements.size(); i++){
-        if (settlements[i]){
+    for (size_t i = 0; i < settlements.size(); i++)
+    {
+        if (settlements[i])
+        {
             delete settlements[i];
         }
     }
     planCounter = otherSimulation.planCounter;
-    for (size_t i = 0; i < actionsLog.size(); i++){
-        if (actionsLog[i]){
+    for (size_t i = 0; i < actionsLog.size(); i++)
+    {
+        if (actionsLog[i])
+        {
             delete actionsLog[i];
         }
     }
-    //actionsLog.clear();
-    //settlements.clear();
+    // actionsLog.clear();
+    // settlements.clear();
     actionsLog = std::move(otherSimulation.actionsLog);
     settlements = std::move(otherSimulation.settlements);
     plans = std::move(otherSimulation.plans);
@@ -284,7 +294,8 @@ bool Simulation::isSettlementExists(const string &settlementName)
 // Assume settlement exist
 Settlement &Simulation ::getSettlement(const string &settlementName)
 {
-    for (size_t i=0; i < settlements.size(); i++){
+    for (size_t i = 0; i < settlements.size(); i++)
+    {
         if (settlements[i]->getName() == settlementName)
         {
             return *settlements[i]; // Dereference pointer and return the object reference
@@ -360,17 +371,18 @@ void Simulation::close()
         }
     }
     actionsLog.clear();
-    for (size_t i = 0; i < settlements.size(); i++){
+    for (size_t i = 0; i < settlements.size(); i++)
     {
         {
-            if (settlements[i])
             {
-                delete settlements[i];
+                if (settlements[i])
+                {
+                    delete settlements[i];
+                }
             }
         }
     }
     settlements.clear();
-    }
 }
 
 void Simulation ::open()

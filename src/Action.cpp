@@ -94,6 +94,7 @@ void AddSettlement::act(Simulation &simulation)
     else
     {
         delete stl;
+        stl = nullptr;
         error("Settlement already exists");
         cout << "Error:" << getErrorMsg() << endl;
     }
