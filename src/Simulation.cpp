@@ -3,7 +3,7 @@
 #include <iostream>
 #include "Auxiliary.h"
 #include "Action.h"
-#include <fstream>
+#include <fstream> // Reading from config file
 #include <string>
 using namespace std;
 

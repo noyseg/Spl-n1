@@ -1,6 +1,4 @@
 #include "Simulation.h"
-#include "Settlement.h"
-#include "SelectionPolicy.h"
 #include <iostream>
 #include <string>
 

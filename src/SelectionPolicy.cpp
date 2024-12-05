@@ -1,7 +1,7 @@
 
 #include "SelectionPolicy.h"
 #include <iostream>
-#include <algorithm> // for min and max functions 
+#include <algorithm> // For min and max functions 
 
 using namespace std;
 
