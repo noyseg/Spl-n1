@@ -10,7 +10,7 @@ Simulation *backup = nullptr;
 
 int main(int argc, char **argv)
 {
-    Settlement stl("kFar", SettlementType::CITY);
+    //Settlement stl("kFar", SettlementType::CITY);
     //  Settlement stl1("kFar11", SettlementType::CITY);
     // Facility *facil = new Facility("kindergarden", "spl2", FacilityCategory::ECONOMY, 1, 2, 1, 1);
     // cout << facil->toString() << endl;
@@ -24,14 +24,14 @@ int main(int argc, char **argv)
     //     cout << "UNDER_CONSTRUCTION time left=" + std::to_string(facil->getTimeLeft()) << endl;
     // }
 
-    // Selection Policy Test
-    NaiveSelection *ns = new NaiveSelection();
-    FacilityType ft1("Hospital", FacilityCategory::ENVIRONMENT, 1, 0, 1, 2);
-    FacilityType ft2("Bank", FacilityCategory::ECONOMY, 3, 2, 1, 1);
-    FacilityType ft3("University", FacilityCategory::ECONOMY, 5, 0, 1, 2);
-    FacilityType ft4("Beauty-Salon", FacilityCategory::LIFE_QUALITY, 1, 2, 2, 2);
+     //Selection Policy Test
+    // NaiveSelection *ns = new NaiveSelection();
+    // FacilityType ft1("Hospital", FacilityCategory::ENVIRONMENT, 1, 0, 1, 2);
+    // FacilityType ft2("Bank", FacilityCategory::ECONOMY, 3, 2, 1, 1);
+    // FacilityType ft3("University", FacilityCategory::ECONOMY, 5, 0, 1, 2);
+    // FacilityType ft4("Beauty-Salon", FacilityCategory::LIFE_QUALITY, 1, 2, 2, 2);
 
-    const vector<FacilityType> facilitiesOptions = {ft1, ft2, ft3, ft4};
+    //const vector<FacilityType> facilitiesOptions = {ft1, ft2, ft3, ft4};
     // const FacilityType &chosenNaive = ns->selectFacility(facilitiesOptions);
     // cout << "Naive Test:" << endl;
     // cout << chosenNaive.getName() << endl;
@@ -82,7 +82,10 @@ int main(int argc, char **argv)
     // //Plan
 
     // Plan *plan = new Plan(999,stl,ns,facilitiesOptions);
-
+    // Plan &pl = plan;
+    // plan->step();
+    // plan->step();
+    // Plan *p = new Plan(*plan);
     if (argc != 2)
     {
         cout << "usage: simulation <config_path>" << endl;
@@ -91,7 +94,7 @@ int main(int argc, char **argv)
 
     string configurationFile = argv[1];
     Simulation simulation(configurationFile);
-    Simulation sim(simulation);
+    //Simulation sim=std::move(simulation);
     simulation.start();
 
     if (backup != nullptr)

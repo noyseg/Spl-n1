@@ -13,7 +13,8 @@ enum class PlanStatus {
 class Plan {
     public:
         Plan(const int planId, const Settlement &settlement, SelectionPolicy *selectionPolicy, const vector<FacilityType> &facilityOptions);
-        Plan(const Plan &otherPlan); //copy constructor 
+        Plan(const Plan &otherPlan); //copy constructor
+        Plan(const Plan &otherPlan,Settlement &settlement); //semi copy constructor 
         Plan(Plan &&otherPlan); //move constructor 
         void clear();
         ~Plan(); // Distructor
@@ -30,6 +31,7 @@ class Plan {
         const vector<Facility*> &getFacilities() const;
         void addFacility(Facility* facility);
         const string toString() const;
+        const string getPlanSettlement() const;
 
     private:
         int plan_id;

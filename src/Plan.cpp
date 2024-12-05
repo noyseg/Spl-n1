@@ -25,6 +25,27 @@ Plan::Plan(const Plan &otherPlan) : plan_id(otherPlan.plan_id),
     }
 }
 
+// semi copy constructor 
+Plan::Plan(const Plan &otherPlan, Settlement &settlement) : plan_id(otherPlan.plan_id),
+                                    settlement(settlement),
+                                    selectionPolicy((*(otherPlan.selectionPolicy)).clone()),
+                                    status(otherPlan.status),
+                                    facilities(),
+                                    underConstruction(),
+                                    facilityOptions(otherPlan.facilityOptions), // References cannot be reseated once initialized
+                                    life_quality_score(otherPlan.life_quality_score), economy_score(otherPlan.economy_score), environment_score(otherPlan.environment_score)
+{
+    for (size_t i = 0; i < otherPlan.facilities.size(); i++)
+    {
+        facilities.push_back(new Facility(*otherPlan.facilities[i])); // Uses defult copy constructor of Facility
+    }
+    for (size_t i = 0; i < otherPlan.underConstruction.size(); i++)
+    {
+        underConstruction.push_back(new Facility(*otherPlan.underConstruction[i])); // Uses defult copy constructor of Facility
+    }
+}
+
+
 // check if needed
 void Plan::clear()
 {
@@ -35,6 +56,7 @@ void Plan::clear()
             delete facilities[i];
         }
     }
+    facilities.clear();
     for (size_t i = 0; i < underConstruction.size(); i++)
     {
         if (underConstruction[i])
@@ -42,6 +64,7 @@ void Plan::clear()
             delete underConstruction[i];
         }
     }
+    underConstruction.clear();
 }
 
 // distructor
@@ -60,11 +83,11 @@ Plan::Plan(Plan &&otherPlan) : plan_id(otherPlan.plan_id),
                                life_quality_score(otherPlan.life_quality_score), economy_score(otherPlan.economy_score), environment_score(otherPlan.environment_score)
 {
     otherPlan.selectionPolicy = nullptr;
-    for (size_t i = 0; i < facilities.size(); i++)
+    for (size_t i = 0; i < otherPlan.facilities.size(); i++)
     {
-        otherPlan.underConstruction[i] = nullptr;
+        otherPlan.facilities[i] = nullptr;
     }
-    for (size_t i = 0; i < underConstruction.size(); i++)
+    for (size_t i = 0; i < otherPlan.underConstruction.size(); i++)
     {
         otherPlan.underConstruction[i] = nullptr;
     }
@@ -167,4 +190,8 @@ const vector<Facility *> &Plan::getFacilities() const
 const string Plan::toString() const
 {
     return std::to_string(plan_id);
+}
+
+const string Plan::getPlanSettlement() const{
+    return settlement.getName();
 }
