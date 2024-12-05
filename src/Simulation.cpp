@@ -290,7 +290,7 @@ Settlement &Simulation ::getSettlement(const string &settlementName)
             return *settlements[i]; // Dereference pointer and return the object reference
         }
     }
-    return *settlements[0]; // This line will never be called - chdfskdfsld,fdv
+    return *settlements[0]; // This line will never be called
 }
 
 vector<BaseAction *> Simulation::getActionsLog() const

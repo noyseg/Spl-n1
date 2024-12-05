@@ -62,11 +62,11 @@ int main(int argc, char **argv)
     // // cout << chosenBalanced1.getName() << endl;
 
     // Plan
-    BalancedSelection *bs = new BalancedSelection(3, 2, 1);
-    Plan *pl = new Plan(231, stl, ns, facilitiesOptions);
-    cout << "Current policy is " + pl->getSelectionPolicyName() << endl;
-    pl->setSelectionPolicy(bs);
-    cout << "New policy is " + pl->getSelectionPolicyName() << endl;
+    // BalancedSelection *bs = new BalancedSelection(3, 2, 1);
+    // Plan *pl = new Plan(231, stl, ns, facilitiesOptions);
+    // cout << "Current policy is " + pl->getSelectionPolicyName() << endl;
+    // pl->setSelectionPolicy(bs);
+    // cout << "New policy is " + pl->getSelectionPolicyName() << endl;
     // pl->printStatus();
     // pl->step();
     // pl->printStatus();

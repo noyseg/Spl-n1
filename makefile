@@ -1,5 +1,6 @@
 # Please implement your Makefile rules and targets below.
-all: clean link run checkMemo
+# all: clean link run checkMemo
+all: clean link checkMemo
 
 link: compile
 	@echo "Linking Object files"
