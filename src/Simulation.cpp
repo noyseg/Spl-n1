@@ -8,6 +8,7 @@
 using namespace std;
 
 // constructor
+// Assuming configFile input is valid, can be empty and with empty lines
 Simulation ::Simulation(const string &configFilePath) : isRunning(false), planCounter(0),
                                                         actionsLog(), plans(), settlements(), facilitiesOptions()
 {
@@ -15,7 +16,7 @@ Simulation ::Simulation(const string &configFilePath) : isRunning(false), planCo
     string line;
     while (getline(File, line))
     {
-        // line is empty do not read it
+        // Skips empty lines
         if (line != "\r")
         {
             vector<std::string> read = Auxiliary::parseArguments(line);
@@ -42,14 +43,17 @@ Simulation ::Simulation(const Simulation &otherSimulation) : isRunning(otherSimu
                                                              planCounter(otherSimulation.planCounter),
                                                              actionsLog(), plans(), settlements(), facilitiesOptions(otherSimulation.facilitiesOptions)
 {
+    // Deep copies settlements
     for (size_t i = 0; i < otherSimulation.settlements.size(); i++)
     {
         settlements.push_back(new Settlement(*(otherSimulation.settlements[i])));
     }
+    // Deep copies actions log
     for (size_t i = 0; i < otherSimulation.actionsLog.size(); i++)
     {
         actionsLog.push_back(otherSimulation.actionsLog[i]->clone());
     }
+    // Deep copies plans with the new settlements we created
     for (size_t i = 0; i < otherSimulation.plans.size(); i++)
     {
         plans.push_back(Plan(otherSimulation.plans[i], getSettlement(otherSimulation.plans[i].getPlanSettlement())));
@@ -64,6 +68,7 @@ Simulation::Simulation(Simulation &&otherSimulation) : isRunning(otherSimulation
                                                        settlements(std::move(otherSimulation.settlements)),
                                                        facilitiesOptions(std::move(otherSimulation.facilitiesOptions))
 {
+    // Clears the moved instance's data
     otherSimulation.settlements.clear();
     otherSimulation.actionsLog.clear();
 }
@@ -71,7 +76,6 @@ Simulation::Simulation(Simulation &&otherSimulation) : isRunning(otherSimulation
 // distructor
 Simulation::~Simulation()
 {
-
     for (size_t i = 0; i < actionsLog.size(); i++)
     {
         if (actionsLog[i])
@@ -245,17 +249,6 @@ void Simulation ::start()
                 addAction(action);
                 (*action).act(*this);
             }
-            else if (actionName.find("Restore") == 0)
-            { // no document of restore
-                (*action).act(*this);
-                if (action->getStatus() == ActionStatus::ERROR)
-                {
-                    addAction(action);
-                }
-                else{
-                    delete action;
-                }
-            }
             else
             {
                 (*action).act(*this);
@@ -349,7 +342,8 @@ bool Simulation::addSettlement(Settlement *settlement)
         settlements.push_back(settlement);
         return true;
     }
-    else{
+    else
+    {
         delete settlement;
     }
     return false;
@@ -367,7 +361,7 @@ void Simulation::close()
 {
     for (Plan &plan : plans)
     {
-        plan.printStatus();
+        plan.printPlanValuesSummery();
     }
     isRunning = false;
     for (size_t i = 0; i < actionsLog.size(); i++)
@@ -393,7 +387,7 @@ void Simulation ::open()
     isRunning = true;
 }
 
-// Pointer will be used for change selection polity afterward. 
+// Pointer will be used for change selection polity afterward.
 SelectionPolicy *Simulation ::createSelectionPolicy(const string &policyName, int lifeQualityScore, int economyScore, int environmentScore)
 {
     if (policyName == "nve")

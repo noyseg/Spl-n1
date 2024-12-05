@@ -122,7 +122,7 @@ void Plan::setSelectionPolicy(SelectionPolicy *selectionPolicy)
     if (this->selectionPolicy){
         delete this->selectionPolicy;
     }
-    (*this).selectionPolicy = std::move(selectionPolicy); // selectionPolicy was built only as a "rvalue"so we can steal resources 
+    (*this).selectionPolicy = std::move(selectionPolicy); // selectionPolicy was built only as a "rvalue"so we can steal resources
 }
 
 // check same name
@@ -189,6 +189,16 @@ void Plan::printStatus()
     }
 }
 
+void Plan::printPlanValuesSummery()
+{
+    cout << "Plan ID: " + std::to_string(plan_id) << endl;
+    cout << "Settlement Name: " + settlement.getName() << endl;
+    cout << "selection Policy: " + (*selectionPolicy).toString() << endl;
+    cout << "LifeQualityScore: " + std::to_string(life_quality_score) << endl;
+    cout << "EconomyScore: " + std::to_string(economy_score) << endl;
+    cout << "EnvironmentScore: " + std::to_string(environment_score) << endl;
+}
+
 const vector<Facility *> &Plan::getFacilities() const
 {
     return facilities;
@@ -201,4 +211,8 @@ const string Plan::toString() const
 
 const string Plan::getPlanSettlement() const{
     return settlement.getName();
+}
+
+const vector<Facility*> &Plan:: getUnderConstruction() const{
+    return underConstruction;
 }
