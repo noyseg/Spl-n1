@@ -16,7 +16,6 @@ class Plan {
         Plan(const Plan &otherPlan); //copy constructor
         Plan(const Plan &otherPlan,Settlement &settlement); //semi copy constructor 
         Plan(Plan &&otherPlan); //move constructor 
-        void clear();
         ~Plan(); // Distructor
         Plan& operator=(const Plan& other) = delete; // Disabled assignment opertaor
         Plan& operator=(Plan&& other) = delete; // Disabled move assignment opertaor

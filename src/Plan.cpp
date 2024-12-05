@@ -45,9 +45,8 @@ Plan::Plan(const Plan &otherPlan, Settlement &settlement) : plan_id(otherPlan.pl
     }
 }
 
-
-// check if needed
-void Plan::clear()
+// distructor
+Plan::~Plan()
 {
     if (selectionPolicy){
         delete selectionPolicy;
@@ -69,12 +68,6 @@ void Plan::clear()
         }
     }
     underConstruction.clear();
-}
-
-// distructor
-Plan::~Plan()
-{
-    clear();
 }
 
 // move constructor
