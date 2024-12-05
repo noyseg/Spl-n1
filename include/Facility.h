@@ -27,8 +27,7 @@ class FacilityType {
         int getEnvironmentScore() const;
         int getEconomyScore() const;
         FacilityCategory getCategory() const;
-        static FacilityCategory stringToFacilityCategory(const string& category);
-        void setTime();
+        static FacilityCategory stringToFacilityCategory(const string& category);//Returning the Facility category acording to a given enum number 
 
     protected:
         const string name;

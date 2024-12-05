@@ -5,25 +5,32 @@ using namespace std;
 
 extern Simulation *backup;
 
+//defualt constructor 
 BaseAction::BaseAction():errorMsg(""),status(ActionStatus::COMPLETED) {}
 
 ActionStatus BaseAction::getStatus() const{
     return status;
 }
 
+//set the Action status to complete when called
 void BaseAction::complete()
 {
     status = ActionStatus::COMPLETED;
 }
+
+//set Action error message to be as given
 void BaseAction::error(string errorMsg)
 {
     status = ActionStatus::ERROR;
     (*this).errorMsg = errorMsg;
 };
+//returning Action error message
 const string &BaseAction::getErrorMsg() const
 {
     return errorMsg;
 };
+
+//returning the action status as a string
 const string BaseAction::getStatusString() const
 {
     if (status == ActionStatus::ERROR)
@@ -33,11 +40,11 @@ const string BaseAction::getStatusString() const
     return "COMPLETED";
 }
 
+//constructor for SimulateStep
 SimulateStep ::SimulateStep(const int numOfSteps) : numOfSteps(numOfSteps){}
 
 void SimulateStep ::act(Simulation &simulation)
 {
-    // how to change status?
     for (int i = 0; i < numOfSteps; i++)
     {
         simulation.step();
@@ -55,10 +62,12 @@ SimulateStep *SimulateStep::clone() const
     return new SimulateStep(*this);
 }
 
+//constructor for AddPlan
 AddPlan ::AddPlan(const string &settlementName, const string &selectionPolicy) : settlementName(settlementName), selectionPolicy(selectionPolicy) {}
+
+//Adding the given plan to the simulation if possible printing an error if not
 void AddPlan::act(Simulation &simulation)
 {
-    cout << simulation.isSettlementExists("anotherVillage") << endl;
     if (!simulation.isSettlementExists(settlementName) || (selectionPolicy != "nve" && selectionPolicy != "bal" 
     && selectionPolicy != "eco" && selectionPolicy != "env"))
     {
@@ -67,7 +76,6 @@ void AddPlan::act(Simulation &simulation)
     }
     else
     {
-        cout << "adding Settlement = "+simulation.getSettlement(settlementName).toString()+" with policy="+selectionPolicy << endl;
         simulation.addPlan(simulation.getSettlement(settlementName), simulation.createSelectionPolicy(selectionPolicy, 0, 0, 0));
         complete();
     }
@@ -83,11 +91,14 @@ AddPlan *AddPlan::clone() const
     return new AddPlan(*this);
 }
 
+//constructor for AddSettlement
 AddSettlement ::AddSettlement(const string &settlementName, SettlementType settlementType) : settlementName(settlementName), settlementType(settlementType) {}
+
+//Adding the given settlement to the simulation if possible printing an error if not
 void AddSettlement::act(Simulation &simulation)
 {
     Settlement *stl = new Settlement(settlementName, settlementType);
-    if (simulation.addSettlement(stl))
+    if (simulation.addSettlement(stl))//checking settlement validity, simulation will handle the pointer deletion 
     {
         complete();
     }
@@ -110,9 +121,13 @@ AddSettlement *AddSettlement::clone() const
     return new AddSettlement(*this);
 }
 
+//constructor for AddFacility
 AddFacility ::AddFacility(const string &facilityName, const FacilityCategory facilityCategory, const int price, const int lifeQualityScore, const int economyScore, const int environmentScore) : facilityName(facilityName), facilityCategory(facilityCategory), price(price), lifeQualityScore(lifeQualityScore), economyScore(economyScore), environmentScore(environmentScore) {}
+
+//Adding the given facility to the simulation if possible printing an error if not
 void AddFacility::act(Simulation &simulation)
 {
+    //creating facility type based on the params given in the constructor
     FacilityType ft(FacilityType(facilityName, facilityCategory, price, lifeQualityScore, economyScore, environmentScore));
     if (simulation.addFacility(ft))
     {
@@ -135,7 +150,10 @@ const string AddFacility::toString() const
     return "facility " + facilityName + " " + std::to_string(static_cast<int>(facilityCategory)) + " " + std::to_string(price) + " " + std::to_string(lifeQualityScore) + " " + std::to_string(economyScore) + " " + std::to_string(environmentScore) + " " + getStatusString();
 }
 
+//constructor for PrintPlanStatus
 PrintPlanStatus ::PrintPlanStatus(int planId) : planId(planId) {}
+
+//printing the given plan by the id if possible, otherwise printing an error 
 void PrintPlanStatus::act(Simulation &simulation)
 {
     if (!simulation.isValidPlan(planId))
@@ -147,7 +165,7 @@ void PrintPlanStatus::act(Simulation &simulation)
     else
     {
         complete();
-        simulation.getPlan(planId).printStatus();
+        simulation.getPlan(planId).printStatus();//printing using Plan function
     }
 }
 
@@ -161,9 +179,13 @@ const string PrintPlanStatus::toString() const
     return "planStatus " + std::to_string(planId) + " " + getStatusString();
 }
 
+//constructor for ChangePlanPolicy
 ChangePlanPolicy ::ChangePlanPolicy(const int planId, const string &newPolicy) : planId(planId), newPolicy(newPolicy) {}
+
+//changing the current policy of the plan given by the id in the constructor
 void ChangePlanPolicy::act(Simulation &simulation)
 {
+    //cannot change policy to the current one
     if (!simulation.isValidPlan(planId) || simulation.getPlan(planId).getSelectionPolicyName() == newPolicy)
     {
         error("Cannot change selection policy");
@@ -176,6 +198,7 @@ void ChangePlanPolicy::act(Simulation &simulation)
         cout << "planID: " << planId << endl;
         cout << "previous policy: " << plan.getSelectionPolicyName() << endl;
         cout << "newPolicy: " << newPolicy << endl;
+        // setSelectionPolicy function will steal the resources and handle the deletion current selection policy 
         SelectionPolicy *sp = simulation.createSelectionPolicy(newPolicy, plan.getlifeQualityScore(), plan.getEconomyScore(), plan.getEnvironmentScore());
         simulation.getPlan(planId).setSelectionPolicy(sp);
     }
@@ -191,7 +214,10 @@ const string ChangePlanPolicy::toString() const
     return "changePolicy: " + std::to_string(planId) + " " + newPolicy + " " + getStatusString();
 }
 
+//defualt constructor for PrintActionsLog
 PrintActionsLog ::PrintActionsLog() {}
+
+//printing each action in the action log of the simulation
 void PrintActionsLog::act(Simulation &simulation)
 {
     for (BaseAction *bs : simulation.getActionsLog())
@@ -200,43 +226,49 @@ void PrintActionsLog::act(Simulation &simulation)
     }
     complete();
 }
+
 PrintActionsLog *PrintActionsLog::clone() const
 {
     return new PrintActionsLog(*this);
 }
+
 const string PrintActionsLog::toString() const
 {
     return "printActionLog " + getStatusString();
 }
 
+//defualt constructor for Close
 Close::Close() {}
 
+//closing the simualtion by calling close function in the simulation
 void Close::act(Simulation &simulation)
 {
     simulation.close();
 }
+
 Close *Close::clone() const
 {
     return new Close(*this);
 }
+
 const string Close::toString() const
 {
     return "closeSimulation";
 }
 
-// BackupSimulation
-
+// constructor for BackupSimulation
 BackupSimulation::BackupSimulation() {}
 
+//performing a backup to the current simulation
 void BackupSimulation::act(Simulation &simulation)
 {
     if (backup == nullptr)
     {
-        backup = new Simulation(simulation); // Allocate a new Simulation
+        backup = new Simulation(simulation); //allocate a new simulation
     }
     else
     {
-        *backup = simulation; // Overwrite the existing object
+        *backup = simulation; //overwrite the existing object
     }
     complete();
 }
@@ -251,8 +283,10 @@ const string BackupSimulation::toString() const
     return "backup " + getStatusString();
 }
 
+//constructor for RestoreSimulation
 RestoreSimulation::RestoreSimulation() {}
 
+//performing a restore to the current simulation if a backup was executed before 
 void RestoreSimulation::act(Simulation &simulation)
 {
     if (backup == nullptr)
@@ -262,7 +296,7 @@ void RestoreSimulation::act(Simulation &simulation)
     }
     else
     {
-        simulation = *backup;
+        simulation = *backup;//using operator=(const Simulation &otherSimulation) in simulation
         complete();
     }
 }

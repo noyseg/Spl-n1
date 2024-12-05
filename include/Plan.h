@@ -26,12 +26,12 @@ class Plan {
         const string getSelectionPolicyName()const;
         void setSelectionPolicy(SelectionPolicy *selectionPolicy);
         void step();
-        const string statusToString() const;
+        const string statusToString() const;//converting enum status to string
         void printStatus();
         const vector<Facility*> &getFacilities() const;
         void addFacility(Facility* facility);
         const string toString() const;
-        const string getPlanSettlement() const;
+        const string getPlanSettlement() const;//returning the name of the plan's settlement
 
     private:
         int plan_id;

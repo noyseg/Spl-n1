@@ -63,7 +63,6 @@ const int Facility::getTimeLeft() const
     return timeLeft;
 }
 
-// לוודא שבסימולציה לא מריצים צעד כאשר הזמן שנותר למפעל הוא 0
 // Promote facility constructoring by one and return Facility Status after promoting
 FacilityStatus Facility::step()
 {
@@ -118,6 +117,7 @@ const string Facility::toString() const
     return ss.str();
 }
 
+//Returning the Facility category acording to a given enum number 
 FacilityCategory FacilityType:: stringToFacilityCategory(const string& category){
     if (category == "0")
     {

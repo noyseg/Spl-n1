@@ -47,4 +47,3 @@ const string Settlement::toString() const
     }
     return str;
 }
-// };
