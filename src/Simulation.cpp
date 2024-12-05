@@ -36,29 +36,25 @@ Simulation ::Simulation(const string &configFilePath) : isRunning(false), planCo
 // copy constructor
 Simulation ::Simulation(const Simulation &otherSimulation) : isRunning(otherSimulation.isRunning),
                                                              planCounter(otherSimulation.planCounter),
-                                                             actionsLog(), plans(), settlements(), facilitiesOptions(otherSimulation.facilitiesOptions)
+                                                             actionsLog(), plans(otherSimulation.plans), settlements(), facilitiesOptions(otherSimulation.facilitiesOptions)
 {
-    for (Settlement *stl : otherSimulation.settlements)
+    for (size_t i = 0; i < otherSimulation.settlements.size(); i++)
     {
-        settlements.push_back(new Settlement(*stl));
+        settlements.push_back(new Settlement(*(otherSimulation.settlements[i])));
     }
-    for (Plan pl : otherSimulation.plans)
+    for (size_t i = 0; i < otherSimulation.actionsLog.size(); i++)
     {
-        Plan newPlan = Plan(pl);
-    }
-    for (BaseAction *act : otherSimulation.actionsLog)
-    {
-        actionsLog.push_back(act->clone());
+        actionsLog.push_back(otherSimulation.actionsLog[i]->clone());
     }
 }
 
 // move constructor
 Simulation::Simulation(Simulation &&otherSimulation) : isRunning(otherSimulation.isRunning),
-                                                             planCounter(otherSimulation.planCounter),
-                                                             actionsLog(std::move(otherSimulation.actionsLog)),
-                                                             plans(std::move(otherSimulation.plans)),
-                                                             settlements(std::move(otherSimulation.settlements)),
-                                                             facilitiesOptions(std::move(otherSimulation.facilitiesOptions))
+                                                       planCounter(otherSimulation.planCounter),
+                                                       actionsLog(std::move(otherSimulation.actionsLog)),
+                                                       plans(std::move(otherSimulation.plans)),
+                                                       settlements(std::move(otherSimulation.settlements)),
+                                                       facilitiesOptions(std::move(otherSimulation.facilitiesOptions))
 {
     otherSimulation.settlements.clear();
     otherSimulation.actionsLog.clear();
@@ -67,59 +63,80 @@ Simulation::Simulation(Simulation &&otherSimulation) : isRunning(otherSimulation
 // distructor
 Simulation::~Simulation()
 {
-    for (BaseAction *action : actionsLog)
+    for (size_t i = 0; i < actionsLog.size(); i++)
     {
-        if (action)
+        if (actionsLog[i])
         {
-            delete action;
+            delete actionsLog[i];
         }
     }
-    for (Settlement *settlement : settlements)
+    actionsLog.clear();
+    for (size_t i = 0; i < settlements.size(); i++)
     {
-        if (settlement)
+        if (settlements[i])
         {
-            delete settlement;
+            delete settlements[i];
         }
     }
+    settlements.clear();
 }
 
-// operator assigment
+// copy operator assigment
 Simulation &Simulation::operator=(const Simulation &otherSimulation)
 {
     if (this != &otherSimulation)
     {
         isRunning = otherSimulation.isRunning;
         planCounter = otherSimulation.planCounter;
-
         // Clear existing actionsLog
-        for (BaseAction *action : actionsLog)
+        for (size_t i = 0; i < actionsLog.size(); i++)
         {
-            delete action;
+            if (actionsLog[i])
+            {
+                delete actionsLog[i]; /// see if we have leak
+            }
         }
         actionsLog.clear();
-        for (BaseAction *action : otherSimulation.actionsLog)
+        for (size_t i = 0; i < otherSimulation.actionsLog.size(); i++)
         {
-            actionsLog.push_back(action->clone()); // Assuming clone() creates a deep copy
+            actionsLog.push_back(otherSimulation.actionsLog[i]->clone());
         }
         // Clear existing settlements
-        for (Settlement *settlement : settlements)
+        for (size_t i = 0; i < settlements.size(); i++)
         {
-            delete settlement;
+            const string myStlName = settlements[i]->getName();
+            bool settlementsInBackup = false;
+            for (size_t j = 0; settlementsInBackup == false & j < otherSimulation.settlements.size(); j++)
+            {
+                if (otherSimulation.settlements[j]->getName() == myStlName)
+                {
+                    settlementsInBackup = true;
+                }
+            }
+            if (!settlementsInBackup)
+            {
+                if (settlements[i])
+                {
+                    delete settlements[i];
+                }
+            }
         }
         settlements.clear();
-        for (Settlement *settlement : otherSimulation.settlements)
+        for (size_t i = 0; i < otherSimulation.settlements.size(); i++)
         {
-            settlements.push_back(settlement);
+            settlements.push_back(otherSimulation.settlements[i]); // Delete settlement if it's not in use
         }
-
         // Rebuild the plans vector
         plans.clear();
-        for (const Plan &plan : otherSimulation.plans)
+        // for (const Plan &plan : otherSimulation.plans)
+        // {
+        //     plans.push_back(plan);
+        // }
+        // here problem
+        for (size_t i = 0; i < otherSimulation.plans.size(); i++)
         {
-            plans.push_back(plan);
+            plans.push_back(Plan(otherSimulation.plans[i]));
         }
-
-        // Copy facilitiesOptions
         facilitiesOptions.clear();
         for (FacilityType ft : otherSimulation.facilitiesOptions)
         {
@@ -134,14 +151,34 @@ Simulation &Simulation::operator=(Simulation &&otherSimulation)
 {
     isRunning = otherSimulation.isRunning;
     planCounter = otherSimulation.planCounter;
-    for (BaseAction *action : actionsLog)
+    for (size_t i = 0; i < actionsLog.size(); i++)
     {
-        if (action)
+        if (actionsLog[i])
         {
-            delete action;
+            delete actionsLog[i]; /// see if we have leak
         }
     }
     actionsLog.clear();
+    actionsLog = std::move(otherSimulation.actionsLog);
+    for (size_t i = 0; i < settlements.size(); i++)
+    {
+        const string myStlName = settlements[i]->getName();
+        bool settlementsInBackup = false;
+        for (size_t j = 0; settlementsInBackup == false & j < otherSimulation.settlements.size(); j++)
+        {
+            if (otherSimulation.settlements[j]->getName() == myStlName)
+            {
+                settlementsInBackup = true;
+            }
+        }
+        if (!settlementsInBackup)
+        {
+            if (settlements[i])
+            {
+                delete settlements[i];
+            }
+        }
+    }
     settlements.clear();
     settlements = std::move(otherSimulation.settlements);
     plans = std::move(otherSimulation.plans);
@@ -223,9 +260,25 @@ void Simulation ::start()
         BaseAction *action = navigateAction(vectorInput);
         if (action != nullptr)
         {
-            (*action).act(*this);
-
-            addAction(action);
+            const string actionName = action->toString();
+            if (actionName.find("backup") == 0)
+            { // document backup
+                addAction(action);
+                (*action).act(*this);
+            }
+            else if (actionName.find("Restore") == 0)
+            { // no document of restore
+                (*action).act(*this);
+                if (action->getStatus() == ActionStatus::ERROR)
+                {
+                    addAction(action);
+                }
+            }
+            else
+            {
+                (*action).act(*this);
+                addAction(action); // keep action with current status
+            }
         }
         else
         {
@@ -260,6 +313,7 @@ bool Simulation::isSettlementExists(const string &settlementName)
     return isExist;
 }
 
+// Assume settlement exist
 Settlement &Simulation ::getSettlement(const string &settlementName)
 {
     // Assuming Settlement Exist
@@ -270,8 +324,7 @@ Settlement &Simulation ::getSettlement(const string &settlementName)
             return *stl; // Dereference pointer and return the object reference
         }
     }
-    // WILL NEVER BE CALLED
-    return (*settlements.at(0));
+    return *settlements[0]; // This line will never be called - chdfskdfsld,fdv
 }
 
 vector<BaseAction *> Simulation::getActionsLog() const
@@ -281,17 +334,19 @@ vector<BaseAction *> Simulation::getActionsLog() const
 
 Plan &Simulation ::getPlan(const int planId)
 {
+    // Assuming we checked for validity before ask for the plan
     return plans[planId];
 }
 
 bool Simulation::isValidPlan(int id)
 {
-    if (id >= 0 && static_cast<size_t>(id) < plans.size()) // if id is negative, it will be implicitly converted to a large positive number when compared to the unsigned value, which can lead to unexpected behavior
+    if (id >= 0 && static_cast<size_t>(id) < plans.size()) // check for size t!!!!!!
     {
         return true;
     }
     return false;
 }
+
 void Simulation::addPlan(const Settlement &settlement, SelectionPolicy *selectionPolicy)
 {
     vector<FacilityType> &rFacilitiesOptions = facilitiesOptions;
@@ -331,13 +386,21 @@ void Simulation::close()
         plan.printStatus();
     }
     isRunning = false;
-    for (BaseAction *ba : actionsLog)
+    for (size_t i = 0; i < actionsLog.size(); i++)
     {
-        delete ba;
+        if (actionsLog[i])
+        {
+            delete actionsLog[i];
+        }
     }
-    for (Settlement *stl : settlements)
+    for (size_t i = 0; i < settlements.size(); i++)
     {
-        delete stl;
+        {
+            if (settlements[i])
+            {
+                delete settlements[i];
+            }
+        }
     }
 }
 
@@ -348,22 +411,21 @@ void Simulation ::open()
 
 SelectionPolicy *Simulation ::createSelectionPolicy(const string &policyName, int lifeQualityScore, int economyScore, int environmentScore)
 {
-    SelectionPolicy *sp; /*DELETE?*/
     if (policyName == "nve")
     {
-        sp = new NaiveSelection();
+        return new NaiveSelection();
     }
     else if (policyName == "bal")
     {
-        sp = new BalancedSelection(lifeQualityScore, economyScore, environmentScore);
+        return new BalancedSelection(lifeQualityScore, economyScore, environmentScore);
     }
     else if (policyName == "eco")
     {
-        sp = new EconomySelection();
+        return new EconomySelection();
     }
     else
     {
-        sp = new SustainabilitySelection();
+        return new SustainabilitySelection();
     }
-    return sp;
+    return nullptr;
 }

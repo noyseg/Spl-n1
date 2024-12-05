@@ -10,7 +10,8 @@ Simulation *backup = nullptr;
 
 int main(int argc, char **argv)
 {
-    // Settlement stl("kFarSPL", SettlementType::CITY);
+    Settlement stl("kFar", SettlementType::CITY);
+    //  Settlement stl1("kFar11", SettlementType::CITY);
     // Facility *facil = new Facility("kindergarden", "spl2", FacilityCategory::ECONOMY, 1, 2, 1, 1);
     // cout << facil->toString() << endl;
     // FacilityStatus fs(facil->step());
@@ -24,13 +25,13 @@ int main(int argc, char **argv)
     // }
 
     // Selection Policy Test
-    // NaiveSelection *ns = new NaiveSelection();
-    // FacilityType ft1("Hospital", FacilityCategory::ENVIRONMENT, 1, 0, 1, 2);
-    // FacilityType ft2("Bank", FacilityCategory::ECONOMY, 3, 2, 1, 1);
-    // FacilityType ft3("University", FacilityCategory::ECONOMY, 5, 0, 1, 2);
-    // FacilityType ft4("Beauty-Salon", FacilityCategory::LIFE_QUALITY, 1, 2, 2, 2);
+    NaiveSelection *ns = new NaiveSelection();
+    FacilityType ft1("Hospital", FacilityCategory::ENVIRONMENT, 1, 0, 1, 2);
+    FacilityType ft2("Bank", FacilityCategory::ECONOMY, 3, 2, 1, 1);
+    FacilityType ft3("University", FacilityCategory::ECONOMY, 5, 0, 1, 2);
+    FacilityType ft4("Beauty-Salon", FacilityCategory::LIFE_QUALITY, 1, 2, 2, 2);
 
-    // const vector<FacilityType> facilitiesOptions = {ft1, ft2, ft3, ft4};
+    const vector<FacilityType> facilitiesOptions = {ft1, ft2, ft3, ft4};
     // const FacilityType &chosenNaive = ns->selectFacility(facilitiesOptions);
     // cout << "Naive Test:" << endl;
     // cout << chosenNaive.getName() << endl;
@@ -61,7 +62,11 @@ int main(int argc, char **argv)
     // // cout << chosenBalanced1.getName() << endl;
 
     // Plan
-    // Plan *pl = new Plan(231,stl,ns,facilitiesOptions);
+    BalancedSelection *bs = new BalancedSelection(3, 2, 1);
+    Plan *pl = new Plan(231, stl, ns, facilitiesOptions);
+    cout << "Current policy is " + pl->getSelectionPolicyName() << endl;
+    pl->setSelectionPolicy(bs);
+    cout << "New policy is " + pl->getSelectionPolicyName() << endl;
     // pl->printStatus();
     // pl->step();
     // pl->printStatus();
@@ -86,6 +91,7 @@ int main(int argc, char **argv)
 
     string configurationFile = argv[1];
     Simulation simulation(configurationFile);
+    Simulation sim(simulation);
     simulation.start();
 
     if (backup != nullptr)

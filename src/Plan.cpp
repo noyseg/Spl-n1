@@ -15,11 +15,11 @@ Plan::Plan(const Plan &otherPlan) : plan_id(otherPlan.plan_id),
                                     facilityOptions(otherPlan.facilityOptions), // References cannot be reseated once initialized
                                     life_quality_score(otherPlan.life_quality_score), economy_score(otherPlan.economy_score), environment_score(otherPlan.environment_score)
 {
-    for (size_t i = 0; i < facilities.size(); i++)
+    for (size_t i = 0; i < otherPlan.facilities.size(); i++)
     {
         facilities.push_back(new Facility(*otherPlan.facilities[i])); // Uses defult copy constructor of Facility
     }
-    for (size_t i = 0; i < underConstruction.size(); i++)
+    for (size_t i = 0; i < otherPlan.underConstruction.size(); i++)
     {
         underConstruction.push_back(new Facility(*otherPlan.underConstruction[i])); // Uses defult copy constructor of Facility
     }
@@ -85,7 +85,8 @@ const int Plan::getEnvironmentScore() const
     return environment_score;
 }
 
-const string Plan::getSelectionPolicyName()const{
+const string Plan::getSelectionPolicyName() const
+{
     return (*selectionPolicy).toString();
 }
 
@@ -104,8 +105,8 @@ void Plan::step()
         Facility *newFacility = new Facility(selectionPolicy->selectFacility(facilityOptions), settlement.getName());
         addFacility(newFacility);
     }
-    
-    for (int i = (underConstruction.size() - 1); i >= 0; i--)
+    int j = (underConstruction.size() - 1);
+    for (int i = j; i >= 0; i--)
     {
         if (underConstruction[i]->step() == FacilityStatus::OPERATIONAL)
         {
@@ -117,8 +118,8 @@ void Plan::step()
             status = PlanStatus::AVALIABLE;
         }
     }
-
 }
+
 void Plan::addFacility(Facility *facility)
 {
     underConstruction.push_back(facility);
