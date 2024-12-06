@@ -1,6 +1,6 @@
 # Please implement your Makefile rules and targets below.
 # all: clean link run checkMemo
-all: run
+all: clean link checkMemo
 
 link: compile
 	@echo "Linking Object files"
@@ -18,7 +18,7 @@ compile: src/main.cpp src/Auxiliary.cpp
 
 
 run:
-	./bin/simulation config_file.txt
+	./bin/main config_file.txt
 
 clean:
 	rm -f bin/*

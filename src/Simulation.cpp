@@ -251,17 +251,8 @@ void Simulation ::start()
         BaseAction *action = navigateAction(vectorInput);
         if (action != nullptr)
         {
-            const string actionName = action->toString();
-            if (actionName.find("backup") == 0)
-            {   // In order to document backup
-                addAction(action);
-                (*action).act(*this);
-            }
-            else
-            {
-                (*action).act(*this);
-                addAction(action); // Documant action with current status
-            }
+            (*action).act(*this);
+            addAction(action); // Documant action with current status
         }
         else
         {
